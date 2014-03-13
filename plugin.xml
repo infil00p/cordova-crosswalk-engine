@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+           id="org.apache.cordova.engine.crosswalk"
+      version="0.0.1-dev">
+
+    <name>Crosswalk Engine</name>
+    <description>Intel CrossWalk Engine</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,chromium,crosswalk,webview</keywords>
+    <repo>https://github.com/infil00p/cordova-crosswalk-engine.git</repo>
+    <issue></issue>
+
+    <engines>
+      <engine name="cordova" version=">=3.4.0" /><!-- Needs cordova/urlutil -->
+    </engines>
+    
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <preference name="webView" value="org.apache.cordova.engine.crosswalk.XWalkCordovaWebView" />
+        </config-file>
+
+        <source-file src="src/android/XWalkCordovaChromeClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
+        <source-file src="src/android/XWalkCordovaWebViewClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
+        <source-file src="src/android/XWalkCordovaWebView.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
+        <source-file src="src/android/XWalkExposedJsApi.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
+
+        <source-file src="src/android/CordovaXWalkCoreExtensionBridge.java" target-dir="src/org/xwalk/runtime/extension" />
+
+        <source-file src="android/jsapi/device_capabilities_api.js" target-dir="assets/jsapi" />
+        <source-file src="android/jsapi/presentation_api.js" target-dir="assets/jsapi" />
+        <source-file src="android/jsapi/screen_orientation_api.js" target-dir="assets/jsapi" />
+
+        <resource-file src="assets/xwalk.pak" target="assets/xwalk.pak" />
+
+    </platform>
+    </plugin>
