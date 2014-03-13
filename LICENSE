@@ -202,7 +202,8 @@
    limitations under the License.
 
 /************************************************/
-This product bundles CordovaXWalkCoreExtensionBridge.java, which is available under a
+This product bundles CordovaXWalkCoreExtensionBridge.java as well
+as the XWalk.pak and the Crosswalk JSApi which is available under a
 "3-clause BSD" license.  For details, see below:
 
  Copyright (c) 2013 Intel Corporation. All rights reserved.
