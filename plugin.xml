@@ -28,9 +28,9 @@
 
         <source-file src="src/android/CordovaXWalkCoreExtensionBridge.java" target-dir="src/org/xwalk/runtime/extension" />
 
-        <source-file src="android/jsapi/device_capabilities_api.js" target-dir="assets/jsapi" />
-        <source-file src="android/jsapi/presentation_api.js" target-dir="assets/jsapi" />
-        <source-file src="android/jsapi/screen_orientation_api.js" target-dir="assets/jsapi" />
+        <source-file src="src/android/jsapi/device_capabilities_api.js" target-dir="assets/jsapi" />
+        <source-file src="src/android/jsapi/presentation_api.js" target-dir="assets/jsapi" />
+        <source-file src="src/android/jsapi/screen_orientation_api.js" target-dir="assets/jsapi" />
 
         <resource-file src="assets/xwalk.pak" target="assets/xwalk.pak" />
 
