@@ -32,12 +32,12 @@ import android.os.Looper;
  * an equivalent entry in CordovaChromeClient.java, and be added to
  * cordova-js/lib/android/plugin/android/promptbasednativeapi.js
  */
-/* package */ class XwalkExposedJsApi {
+/* package */ class XWalkExposedJsApi {
     
     private PluginManager pluginManager;
     private NativeToJsMessageQueue jsMessageQueue;
     
-    public XwalkExposedJsApi(PluginManager pluginManager, NativeToJsMessageQueue jsMessageQueue) {
+    public XWalkExposedJsApi(PluginManager pluginManager, NativeToJsMessageQueue jsMessageQueue) {
         this.pluginManager = pluginManager;
         this.jsMessageQueue = jsMessageQueue;
     }

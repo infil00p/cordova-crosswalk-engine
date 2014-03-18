@@ -80,7 +80,7 @@ import android.widget.RelativeLayout;
  * @see XWalkCordovaWebViewClient
  * @see XWalkCordovaWebView
  */
-public class XwalkCordovaChromeClient extends XWalkDefaultWebChromeClient implements CordovaChromeClient {
+public class XWalkCordovaChromeClient extends XWalkDefaultWebChromeClient implements CordovaChromeClient {
 
     public static final int FILECHOOSER_RESULTCODE = 5173;
     private static final String LOG_TAG = "CordovaChromeClient";
@@ -100,7 +100,7 @@ public class XwalkCordovaChromeClient extends XWalkDefaultWebChromeClient implem
      *
      * @param cordova
      */
-    public XwalkCordovaChromeClient(CordovaInterface cordova) {
+    public XWalkCordovaChromeClient(CordovaInterface cordova) {
         super(cordova.getActivity(), null);
         this.cordova = cordova;
     }
@@ -111,7 +111,7 @@ public class XwalkCordovaChromeClient extends XWalkDefaultWebChromeClient implem
      * @param ctx
      * @param app
      */
-    public XwalkCordovaChromeClient(CordovaInterface ctx, XWalkCordovaWebView app) {
+    public XWalkCordovaChromeClient(CordovaInterface ctx, XWalkCordovaWebView app) {
         super(ctx.getActivity(), app);
         this.cordova = ctx;
         this.appView = app;

@@ -103,7 +103,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
     private CordovaInterface cordova;
     XWalkCordovaWebViewClient viewClient;
     @SuppressWarnings("unused")
-    private XwalkCordovaChromeClient chromeClient;
+    private XWalkCordovaChromeClient chromeClient;
 
     private String url;
 
@@ -117,7 +117,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
     private long lastMenuEventTime = 0;
 
     NativeToJsMessageQueue jsMessageQueue;
-    XwalkExposedJsApi exposedJsApi;
+    XWalkExposedJsApi exposedJsApi;
 
     /** custom view created by the browser (a video player for example) */
     private View mCustomView;
@@ -183,7 +183,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         {
             Log.d(TAG, "Your activity must implement CordovaInterface to work");
         }
-        this.setWebChromeClient(new XwalkCordovaChromeClient(this.cordova, this));
+        this.setWebChromeClient(new XWalkCordovaChromeClient(this.cordova, this));
         this.initWebViewClient(this.cordova);
         this.loadConfiguration();
         this.setup();
@@ -207,7 +207,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         {
             Log.d(TAG, "Your activity must implement CordovaInterface to work");
         }
-        this.setWebChromeClient(new XwalkCordovaChromeClient(this.cordova, this));
+        this.setWebChromeClient(new XWalkCordovaChromeClient(this.cordova, this));
         this.loadConfiguration();
         this.setup();
     }
@@ -231,7 +231,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         {
             Log.d(TAG, "Your activity must implement CordovaInterface to work");
         }
-        this.setWebChromeClient(new XwalkCordovaChromeClient(this.cordova));
+        this.setWebChromeClient(new XWalkCordovaChromeClient(this.cordova));
         this.initWebViewClient(this.cordova);
         this.loadConfiguration();
         this.setup();
@@ -319,7 +319,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         extensionManager = new XWalkExtensionManager(this.cordova.getActivity(), this.cordova.getActivity());
         extensionManager.loadExtensions();
         jsMessageQueue = new NativeToJsMessageQueue(this, cordova);
-        exposedJsApi = new XwalkExposedJsApi(pluginManager, jsMessageQueue);
+        exposedJsApi = new XWalkExposedJsApi(pluginManager, jsMessageQueue);
         resourceApi = new CordovaResourceApi(this.getContext(), pluginManager);
         exposeJsInterface();
     }
@@ -366,12 +366,12 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
      *
      * @param client
      */
-    public void setWebChromeClient(XwalkCordovaChromeClient client) {
+    public void setWebChromeClient(XWalkCordovaChromeClient client) {
         this.chromeClient = client;
         super.setXWalkWebChromeClient(client);
     }
     
-    public XwalkCordovaChromeClient getWebChromeClient() {
+    public XWalkCordovaChromeClient getWebChromeClient() {
         return this.chromeClient;
     }
 
