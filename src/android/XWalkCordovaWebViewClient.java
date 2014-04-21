@@ -124,10 +124,10 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClientImpl implement
      * @param view
      */
     public XWalkCordovaWebViewClient(CordovaInterface cordova, XWalkCordovaWebView view) {
-    	super(cordova.getActivity(), view);
+    	super(cordova.getActivity(), view.getView());
         this.cordova = cordova;
         this.appView = view;
-        this.appView.setXWalkClient(new CordovaInternalViewClient(view, cordova));
+        this.appView.getView().setXWalkClient(new CordovaInternalViewClient(view, cordova));
     }
 
     /**

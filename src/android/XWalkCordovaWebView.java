@@ -68,7 +68,9 @@ import android.widget.LinearLayout.LayoutParams;
 import org.xwalk.core.XWalkNavigationHistory;
 import org.xwalk.core.XWalkNavigationItem;
 import org.xwalk.core.XWalkPreferences;
+import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkSettings;
+import org.xwalk.core.XWalkUIClient;
 import org.xwalk.core.XWalkView;
 import org.xwalk.core.XWalkWebChromeClient;
 /*
@@ -77,7 +79,7 @@ import org.xwalk.core.XWalkWebChromeClient;
  * @see <a href="http://developer.android.com/guide/webapps/webview.html">WebView guide</a>
  * @see <a href="http://developer.android.com/reference/android/webkit/WebView.html">WebView</a>
  */
-public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
+public class XWalkCordovaWebView implements CordovaWebView {
 
     public static final String TAG = "CordovaWebView";
     public static final String CORDOVA_VERSION = "3.3.0";
@@ -89,6 +91,8 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
     private boolean paused;
 
     private BroadcastReceiver receiver;
+    
+    private XWalkView webview;
 
 
     /** Activities and other important classes **/
@@ -146,7 +150,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
      * @param context
      */
     public XWalkCordovaWebView(Context context) {
-        super(context, (Activity)null);
+        this.webview = new XWalkView(context, (Activity)null);
         if (CordovaInterface.class.isInstance(context))
         {
             this.cordova = (CordovaInterface) context;
@@ -166,7 +170,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
      * @param attrs
      */
     public XWalkCordovaWebView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this.webview = new XWalkView(context, attrs);
         if (CordovaInterface.class.isInstance(context))
         {
             this.cordova = (CordovaInterface) context;
@@ -190,7 +194,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
      *
      */
     public XWalkCordovaWebView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs);
+        this.webview = new XWalkView(context, attrs);
         if (CordovaInterface.class.isInstance(context))
         {
             this.cordova = (CordovaInterface) context;
@@ -214,7 +218,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
      */
     @TargetApi(11)
     public XWalkCordovaWebView(Context context, AttributeSet attrs, int defStyle, boolean privateBrowsing) {
-        super(context, attrs);
+        this.webview = new XWalkView(context, attrs);
         if (CordovaInterface.class.isInstance(context))
         {
             this.cordova = (CordovaInterface) context;
@@ -240,12 +244,12 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
     private void setup() {
-        this.setVerticalScrollBarEnabled(false);
+        this.webview.setVerticalScrollBarEnabled(false);
         if (shouldRequestFocusOnInit()) {
-			this.requestFocusFromTouch();
+			this.webview.requestFocusFromTouch();
 		}
 		// Enable JavaScript
-        XWalkSettings settings = this.getSettings();
+        XWalkSettings settings = this.webview.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         // nhu: N/A
@@ -335,7 +339,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
             Log.i(TAG, "Disabled addJavascriptInterface() bridge callback due to a bug on the 2.3 emulator");
             return;
         }
-        this.addJavascriptInterface(exposedJsApi, "_cordovaNative");
+        this.webview.addJavascriptInterface(exposedJsApi, "_cordovaNative");
     }
 
     /**
@@ -345,7 +349,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
      */
     public void setWebViewClient(XWalkCordovaWebViewClient client) {
         this.viewClient = client;
-        super.setResourceClient(client);
+        this.webview.setResourceClient(client);
     }
 
     /**
@@ -355,7 +359,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
      */
     public void setWebChromeClient(XWalkCordovaChromeClient client) {
         this.chromeClient = client;
-        super.setUIClient(client);
+        this.webview.setUIClient(client);
     }
     
     public XWalkCordovaChromeClient getWebChromeClient() {
@@ -367,7 +371,6 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
      *
      * @param url
      */
-    @Override
     public void load(String url, String content) {
         if (url.equals("about:blank") || url.startsWith("javascript:")) {
             this.loadUrlNow(url);
@@ -431,7 +434,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         // Timeout error method
         final Runnable loadError = new Runnable() {
             public void run() {
-                me.stopLoading();
+                me.webview.stopLoading();
                 LOG.e(TAG, "CordovaWebView: TIMEOUT ERROR!");
                 if (viewClient != null) {
                     viewClient.onReceivedError((CordovaWebView) me, -6, "The connection to the server was unsuccessful.", url);
@@ -477,7 +480,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
             LOG.d(TAG, ">>> loadUrlNow()");
         }
         if (url.startsWith("file://") || url.startsWith("javascript:") || Config.isUrlWhiteListed(url)) {
-            super.load(url, null);
+            this.webview.load(url, null);
         }
     }
 
@@ -509,6 +512,8 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
     }
     
     
+    // TODO(ningxin): XWalkViewUIClient should provide onScrollChanged callback
+    /*
     public void onScrollChanged(int l, int t, int oldl, int oldt)
     {
         super.onScrollChanged(l, t, oldl, oldt);
@@ -516,6 +521,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         ScrollEvent myEvent = new ScrollEvent(l, t, oldl, oldt, this);
         this.postMessage("onScrollChanged", myEvent);
     }
+    */
     
     /**
      * Send JavaScript statement back to JavaScript.
@@ -560,9 +566,9 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
 
         // Check webview first to see if there is a history
         // This is needed to support curPage#diffLink, since they are added to appView's history, but not our history url array (JQMobile behavior)
-        if (super.getNavigationHistory().canGoBack()) {
+        if (this.webview.getNavigationHistory().canGoBack()) {
             printBackForwardList();
-            super.getNavigationHistory().navigate(XWalkNavigationHistory.Direction.BACKWARD, 1);
+            this.webview.getNavigationHistory().navigate(XWalkNavigationHistory.Direction.BACKWARD, 1);
             
             return true;
         }
@@ -679,7 +685,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
             }
             else
             {
-                return super.onKeyDown(keyCode, event);
+                return this.webview.onKeyDown(keyCode, event);
             }
         }
         else if(keyCode == KeyEvent.KEYCODE_BACK)
@@ -698,11 +704,11 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
                 cordova.getActivity().openOptionsMenu();
                 return true;
             } else {
-                return super.onKeyDown(keyCode, event);
+                return this.webview.onKeyDown(keyCode, event);
             }
         }
         
-        return super.onKeyDown(keyCode, event);
+        return this.webview.onKeyDown(keyCode, event);
     }
     
 
@@ -712,8 +718,8 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         // If back key
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             // A custom view is currently displayed  (e.g. playing a video)
-            if (this.hasEnteredFullscreen()) {
-                this.leaveFullscreen();
+            if (this.webview.hasEnteredFullscreen()) {
+                this.webview.leaveFullscreen();
                 return true;
             } else if (mCustomView != null) {
                 this.hideCustomView();
@@ -747,7 +753,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
                 this.loadUrl("javascript:cordova.fireDocumentEvent('menubutton');");
             }
             this.lastMenuEventTime = event.getEventTime();
-            return super.onKeyUp(keyCode, event);
+            return this.webview.onKeyUp(keyCode, event);
         }
         // If search key
         else if (keyCode == KeyEvent.KEYCODE_SEARCH) {
@@ -757,11 +763,11 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         else if(keyUpCodes.contains(keyCode))
         {
             //What the hell should this do?
-            return super.onKeyUp(keyCode, event);
+            return this.webview.onKeyUp(keyCode, event);
         }
 
         //Does webkit change this behavior?
-        return super.onKeyUp(keyCode, event);
+        return this.webview.onKeyUp(keyCode, event);
     }
 
     
@@ -810,9 +816,9 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         // If app doesn't want to run in background
         if (!keepRunning) {
             // Pause JavaScript timers (including setInterval)
-            this.pauseTimers();
+            this.webview.pauseTimers();
         }
-        this.onHide();
+        this.webview.onHide();
         paused = true;
    
     }
@@ -828,8 +834,8 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         }
 
         // Resume JavaScript timers (including setInterval)
-        this.resumeTimers();
-        this.onShow();
+        this.webview.resumeTimers();
+        this.webview.onShow();
         paused = false;
     }
     
@@ -855,17 +861,17 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
             }
         }
         
-        this.onDestroy();
+        this.webview.onDestroy();
     }
     
-    public boolean onNewIntent(Intent intent)
+    public void onNewIntent(Intent intent)
     {
-    	if (super.onNewIntent(intent)) return false;
+    	if (this.webview.onNewIntent(intent)) return;
         //Forward to plugins
         if (this.pluginManager != null) {
             this.pluginManager.onNewIntent(intent);
         }
-        return false;
+        return;
     }
     
     public boolean isPaused()
@@ -887,7 +893,7 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
     }
     
     public void printBackForwardList() {
-    	XWalkNavigationHistory currentList = this.getNavigationHistory();
+    	XWalkNavigationHistory currentList = this.webview.getNavigationHistory();
     	int currentSize = currentList.size();
         for(int i = 0; i < currentSize; ++i)
         {
@@ -901,11 +907,11 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
     //Can Go Back is BROKEN!
     public boolean startOfHistory()
     {
-    	XWalkNavigationHistory currentList = this.getNavigationHistory();
+    	XWalkNavigationHistory currentList = this.webview.getNavigationHistory();
     	XWalkNavigationItem item = currentList.getItemAt(0);
         if( item!=null){	// Null-fence in case they haven't called loadUrl yet (CB-2458)
 	        String url = item.getUrl();
-	        String currentUrl = this.getUrl();
+	        String currentUrl = this.webview.getUrl();
 	        LOG.d(TAG, "The current URL is: " + currentUrl);
 	        LOG.d(TAG, "The URL at item 0 is: " + url);
 	        return currentUrl.equals(url);
@@ -966,10 +972,9 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
         return mCustomView != null;
     }
     
-    @Override
     public boolean restoreState(Bundle savedInstanceState)
     {
-    	boolean result = super.restoreState(savedInstanceState);
+    	boolean result = this.webview.restoreState(savedInstanceState);
         Log.d(TAG, "WebView restoration crew now restoring!");
         //Initialize the plugin manager once more
         this.pluginManager.init();
@@ -986,148 +991,144 @@ public class XWalkCordovaWebView extends XWalkView implements CordovaWebView {
 
     @Override
     public void setWebViewClient(CordovaWebViewClient webViewClient) {
-        // TODO Auto-generated method stub
-        
+    	// TODO(ningxin): need to fix makeWebViewClient.
+    	// this.webview.setResourceClient((XWalkResourceClient) webViewClient);
     }
 
     @Override
     public void setWebChromeClient(CordovaChromeClient webChromeClient) {
-        // TODO Auto-generated method stub
-        
+    	// TODO(ningxin): need to fix makeChromeClient.
+        // this.webview.setUIClient((XWalkUIClient) webChromeClient);
     }
 
     @Override
     public void setId(int i) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void setLayoutParams(LayoutParams layoutParams) {
-        // TODO Figure out how the XWalk gets laid out.  This is goofy! 
+        this.webview.setId(i);
     }
 
     @Override
     public void setVisibility(int invisible) {
-        // TODO Auto-generated method stub
-        
+        this.webview.setVisibility(invisible);
     }
 
     @Override
     public boolean canGoBack() {
-        // TODO Auto-generated method stub
-        return super.getNavigationHistory().canGoBack();
+        return this.webview.getNavigationHistory().canGoBack();
     }
 
     @Override
     public void clearCache(boolean b) {
-        // TODO Auto-generated method stub
-        
+        this.webview.clearCache(b);
     }
 
     @Override
     public void clearHistory() {
         // TODO Auto-generated method stub
-    	super.getNavigationHistory().clear();
+    	this.webview.getNavigationHistory().clear();
     }
 
     @Override
     public void addJavascript(String statement) {
-        // TODO Auto-generated method stub
-        
+    	this.jsMessageQueue.addJavaScript(statement);
     }
 
     @Override
     public CordovaPlugin getPlugin(String initCallbackClass) {
-        // TODO Auto-generated method stub
-        return null;
+    	return this.pluginManager.getPlugin(initCallbackClass);
     }
 
     @Override
     public View getFocusedChild() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.webview.getFocusedChild();
     }
 
     @Override
     public String exec(String service, String action, String callbackId,
             String message) throws JSONException {
-        // TODO Auto-generated method stub
-        return null;
+    	return this.exposedJsApi.exec(service, action, callbackId, message);
     }
 
     @Override
     public void setNativeToJsBridgeMode(int parseInt) {
-        // TODO Auto-generated method stub
-        
+    	this.exposedJsApi.setNativeToJsBridgeMode(parseInt);
     }
 
     @Override
     public String retrieveJsMessages(boolean equals) {
-        // TODO Auto-generated method stub
-        return null;
+    	return this.exposedJsApi.retrieveJsMessages(equals);
     }
 
     @Override
     public void showCustomView(View view, CustomViewCallback callback) {
         // TODO Auto-generated method stub
-        
     }
 
 
 
     @Override
     public boolean onOverrideUrlLoading(String url) {
-        // TODO Auto-generated method stub
-        return false;
+    	return this.pluginManager.onOverrideUrlLoading(url);
     }
 
     @Override
     public void resetJsMessageQueue() {
-        // TODO Auto-generated method stub
-        
+    	this.jsMessageQueue.reset();
     }
 
     @Override
     public void onReset() {
-        // TODO Auto-generated method stub
-        
+    	this.pluginManager.onReset();
     }
 
     @Override
     public int getVisibility() {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.webview.getVisibility();
     }
 
     @Override
     public void incUrlTimeout() {
-        // TODO Auto-generated method stub
-        
+    	this.loadUrlTimeout++;
     }
 
     @Override
     public void setOverScrollMode(int overScrollNever) {
-        // TODO Auto-generated method stub
-        
+    	this.webview.setOverScrollMode(overScrollNever);
     }
 
     @Override
     public void setNetworkAvailable(boolean online) {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
     public PluginManager getPluginManager() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.pluginManager;
     }
 
     @Override
     public void setLayoutParams(
             android.widget.LinearLayout.LayoutParams layoutParams) {
-        // TODO Auto-generated method stub
-        
+    	this.webview.setLayoutParams(layoutParams);
+    }
+
+	@Override
+	public Object getParent() {
+		return this.webview.getParent();
+	}
+
+	@Override
+	public Context getContext() {
+		return webview.getContext();
+	}
+
+	@Override
+	public void setLayoutParams(
+			android.widget.FrameLayout.LayoutParams layoutParams) {
+		this.webview.setLayoutParams(layoutParams);
+	}
+	
+	@Override
+    public XWalkView getView() {
+    	return this.webview;
     }
 }

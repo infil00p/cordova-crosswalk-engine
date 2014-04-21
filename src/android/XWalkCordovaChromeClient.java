@@ -93,10 +93,10 @@ public class XWalkCordovaChromeClient extends XWalkUIClientImpl implements Cordo
      * @param app
      */
     public XWalkCordovaChromeClient(CordovaInterface ctx, XWalkCordovaWebView app) {
-        super(ctx.getActivity(), app);
+        super(ctx.getActivity(), app.getView());
         this.cordova = ctx;
         this.appView = app;
-        this.appView.setXWalkWebChromeClient(new CordovaWebChromeClient(ctx.getActivity(), app));
+        this.appView.getView().setXWalkWebChromeClient(new CordovaWebChromeClient(ctx.getActivity(), app));
     }
 
     /**
