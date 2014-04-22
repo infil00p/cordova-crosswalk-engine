@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -41,21 +42,14 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.util.Log;
 import android.view.View;
-//import android.webkit.HttpAuthHandler;
-//import android.webkit.SslErrorHandler;
+import android.webkit.ValueCallback;
 import android.webkit.WebResourceResponse;
 
-
-
-
-
-//import android.webkit.WebView;
-//import android.webkit.WebViewClient;
 import org.chromium.net.NetError;
+import org.xwalk.core.XWalkResourceClientImpl;
 import org.xwalk.core.XWalkView;
 import org.xwalk.core.XWalkClient;
 import org.xwalk.core.XWalkHttpAuthHandler;
-import org.xwalk.core.SslErrorHandler;
 
 /**
  * This class is the WebViewClient that implements callbacks for our web view.
@@ -69,7 +63,7 @@ import org.xwalk.core.SslErrorHandler;
  * @see XwalkCordovaChromeClient
  * @see XWalkCordovaWebView
  */
-public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWebViewClient {
+public class XWalkCordovaWebViewClient extends XWalkResourceClientImpl implements CordovaWebViewClient {
 
 	private static final String TAG = "CordovaWebViewClient";
 	private static final String CORDOVA_EXEC_URL_PREFIX = "http://cdv_exec/";
@@ -119,6 +113,7 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
      * @param cordova
      */
     public XWalkCordovaWebViewClient(CordovaInterface cordova) {
+    	super(cordova.getActivity(), null);
         this.cordova = cordova;
     }
 
@@ -129,8 +124,10 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
      * @param view
      */
     public XWalkCordovaWebViewClient(CordovaInterface cordova, XWalkCordovaWebView view) {
+    	super(cordova.getActivity(), view.getView());
         this.cordova = cordova;
         this.appView = view;
+        this.appView.getView().setXWalkClient(new CordovaInternalViewClient(view, cordova));
     }
 
     /**
@@ -262,13 +259,52 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
     }
 
     /**
-     * Give the host application a chance to take over the control when a new url
-     * is about to be loaded in the current WebView.
-     *
-     * @param view          The WebView that is initiating the callback.
-     * @param url           The url to be loaded.
-     * @return              true to override, false for default behavior
-     */
+    * Report an error to the host application. These errors are unrecoverable (i.e. the main resource is unavailable).
+    * The errorCode parameter corresponds to one of the ERROR_* constants.
+    *
+    * @param view          The WebView that is initiating the callback.
+    * @param errorCode     The error code corresponding to an ERROR_* value.
+    * @param description   A String describing the error.
+    * @param failingUrl    The url that failed to load.
+    */
+   @Override
+   public void onReceivedLoadError(XWalkView view, int errorCode, String description,
+           String failingUrl) {
+       LOG.d(TAG, "CordovaWebViewClient.onReceivedError: Error code=%s Description=%s URL=%s", errorCode, description, failingUrl);
+
+       // Clear timeout flag
+       this.appView.loadUrlTimeout++;
+
+       // Convert the XWalk error code to Cordova error code, which follows the Android spec,
+       // http://developer.android.com/reference/android/webkit/WebViewClient.html.
+       errorCode = convertErrorCode(errorCode);
+
+       // Handle error
+       JSONObject data = new JSONObject();
+       try {
+           data.put("errorCode", errorCode);
+           data.put("description", description);
+           data.put("url", failingUrl);
+       } catch (JSONException e) {
+           e.printStackTrace();
+       }
+       this.appView.postMessage("onReceivedError", data);
+   }
+
+   // TODO(yongsheng): remove the dependency of Crosswalk internal class?
+   class CordovaInternalViewClient extends XWalkClient {
+   // Don't add extra indents for keeping them with upstream to avoid
+   // merge conflicts.
+   CordovaInterface cordova;
+   CordovaWebView appView;
+   private boolean doClearHistory = false;
+
+   CordovaInternalViewClient(CordovaWebView view, CordovaInterface ci) {
+       super(((XWalkView)view).getActivity(), (XWalkView) view);
+       cordova = ci;
+       appView = view;
+   }
+ 
 	@Override
     public boolean shouldOverrideUrlLoading(XWalkView view, String url) {
     	// Check if it's an exec() bridge command message.
@@ -277,7 +313,7 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
     	}
 
         // Give plugins the chance to handle the url
-    	else if ((this.appView.pluginManager != null) && this.appView.pluginManager.onOverrideUrlLoading(url)) {
+    	else if ((this.appView.getPluginManager() != null) && this.appView.getPluginManager().onOverrideUrlLoading(url)) {
         }
 
         // If dialing phone (tel:5551212)
@@ -392,7 +428,7 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
     public void onReceivedHttpAuthRequest(XWalkView view, XWalkHttpAuthHandler handler, String host, String realm) {
 
         // Get the authentication token
-        AuthenticationToken token = this.getAuthenticationToken(host, realm);
+        AuthenticationToken token = getAuthenticationToken(host, realm);
         if (token != null) {
             handler.proceed(token.getUserName(), token.getPassword());
         }
@@ -412,7 +448,7 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
      * @param url           The url of the page.
      */
     @Override
-    public void onPageStarted(XWalkView view, String url, Bitmap favicon) {
+    public void onPageStarted(XWalkView view, String url) {
 
         // Flush stale messages.
         this.appView.resetJsMessageQueue();
@@ -421,8 +457,8 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
         this.appView.postMessage("onPageStarted", url);
 
         // Notify all plugins of the navigation, so they can clean up if necessary.
-        if (this.appView.pluginManager != null) {
-            this.appView.pluginManager.onReset();
+        if (this.appView.getPluginManager() != null) {
+            this.appView.getPluginManager().onReset();
         }
     }
 
@@ -446,12 +482,12 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
          * onPageStared is not called. Clearing the history at that point would break jQuery apps.
          */
         if (this.doClearHistory) {
-            view.clearHistory();
+            view.getNavigationHistory().clear();
             this.doClearHistory = false;
         }
 
         // Clear timeout flag
-        this.appView.loadUrlTimeout++;
+        ((XWalkCordovaWebView) this.appView).loadUrlTimeout++;
 
         // Broadcast message that page has loaded
         this.appView.postMessage("onPageFinished", url);
@@ -481,38 +517,6 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
     }
 
     /**
-     * Report an error to the host application. These errors are unrecoverable (i.e. the main resource is unavailable).
-     * The errorCode parameter corresponds to one of the ERROR_* constants.
-     *
-     * @param view          The WebView that is initiating the callback.
-     * @param errorCode     The error code corresponding to an ERROR_* value.
-     * @param description   A String describing the error.
-     * @param failingUrl    The url that failed to load.
-     */
-    @Override
-    public void onReceivedError(XWalkView view, int errorCode, String description, String failingUrl) {
-        LOG.d(TAG, "CordovaWebViewClient.onReceivedError: Error code=%s Description=%s URL=%s", errorCode, description, failingUrl);
-
-        // Clear timeout flag
-        this.appView.loadUrlTimeout++;
-
-        // Convert the XWalk error code to Cordova error code, which follows the Android spec,
-        // http://developer.android.com/reference/android/webkit/WebViewClient.html.
-        errorCode = convertErrorCode(errorCode);
-
-        // Handle error
-        JSONObject data = new JSONObject();
-        try {
-            data.put("errorCode", errorCode);
-            data.put("description", description);
-            data.put("url", failingUrl);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        this.appView.postMessage("onReceivedError", data);
-    }
-
-    /**
      * Notify the host application that an SSL error occurred while loading a resource.
      * The host application must call either handler.cancel() or handler.proceed().
      * Note that the decision may be retained for use in response to future SSL errors.
@@ -524,7 +528,7 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
      */
     @TargetApi(8)
     @Override
-    public void onReceivedSslError(XWalkView view, SslErrorHandler handler, SslError error) {
+    public void onReceivedSslError(XWalkView view, ValueCallback<Boolean> callback, SslError error) {
 
         final String packageName = this.cordova.getActivity().getPackageName();
         final PackageManager pm = this.cordova.getActivity().getPackageManager();
@@ -534,18 +538,19 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
             appInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
             if ((appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
                 // debug = true
-                handler.proceed();
+                callback.onReceiveValue(true);
                 return;
             } else {
                 // debug = false
-                super.onReceivedSslError(view, handler, error);
+                super.onReceivedSslError(view, callback, error);
             }
         } catch (NameNotFoundException e) {
             // When it doubt, lock it out!
-            super.onReceivedSslError(view, handler, error);
+            super.onReceivedSslError(view, callback, error);
         }
     }
 
+    }  // CordovaInternalViewClient
 
     /**
      * Sets the authentication token.
@@ -629,7 +634,7 @@ public class XWalkCordovaWebViewClient extends XWalkClient implements CordovaWeb
     public void onReceivedError(CordovaWebView me, int i, String string,
             String url) {
         //This should work, but may run into casting errors! 
-        this.onReceivedError((XWalkView) me, i, string, url);
+        this.onReceivedLoadError((XWalkView) me, i, string, url);
         
     }
 
