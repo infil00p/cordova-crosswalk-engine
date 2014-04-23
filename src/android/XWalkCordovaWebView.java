@@ -159,6 +159,8 @@ public class XWalkCordovaWebView implements CordovaWebView {
         {
             Log.d(TAG, "Your activity must implement CordovaInterface to work");
         }
+        this.setWebChromeClient(new XWalkCordovaChromeClient(this.cordova, this));
+        this.initWebViewClient(this.cordova);
         this.loadConfiguration();
         this.setup();
     }
