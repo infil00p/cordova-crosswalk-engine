@@ -300,7 +300,7 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
    private boolean doClearHistory = false;
 
    CordovaInternalViewClient(CordovaWebView view, CordovaInterface ci) {
-       super((XWalkView) view);
+       super((XWalkView) view.getView());
        cordova = ci;
        appView = view;
    }
@@ -634,7 +634,7 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
     public void onReceivedError(CordovaWebView me, int i, String string,
             String url) {
         //This should work, but may run into casting errors! 
-        this.onReceivedLoadError((XWalkView) me, i, string, url);
+        this.onReceivedLoadError((XWalkView) me.getView(), i, string, url);
         
     }
 
