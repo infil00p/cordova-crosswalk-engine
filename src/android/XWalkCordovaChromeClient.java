@@ -47,7 +47,7 @@ import android.widget.RelativeLayout;
 
 import org.xwalk.core.XWalkJavascriptResult;
 import org.xwalk.core.XWalkWebChromeClient;
-import org.xwalk.core.XWalkUIClientImpl;
+import org.xwalk.core.XWalkUIClient;
 import org.xwalk.core.XWalkView;
 
 /**
@@ -61,7 +61,7 @@ import org.xwalk.core.XWalkView;
  * @see XWalkCordovaWebViewClient
  * @see XWalkCordovaWebView
  */
-public class XWalkCordovaChromeClient extends XWalkUIClientImpl implements CordovaChromeClient {
+public class XWalkCordovaChromeClient extends XWalkUIClient implements CordovaChromeClient {
 
     public static final int FILECHOOSER_RESULTCODE = 5173;
     private static final String LOG_TAG = "CordovaChromeClient";
@@ -82,7 +82,7 @@ public class XWalkCordovaChromeClient extends XWalkUIClientImpl implements Cordo
      * @param cordova
      */
     public XWalkCordovaChromeClient(CordovaInterface cordova) {
-        super(cordova.getActivity(), null);
+        super(null);
         this.cordova = cordova;
     }
 
@@ -93,7 +93,7 @@ public class XWalkCordovaChromeClient extends XWalkUIClientImpl implements Cordo
      * @param app
      */
     public XWalkCordovaChromeClient(CordovaInterface ctx, XWalkCordovaWebView app) {
-        super(ctx.getActivity(), app.getView());
+        super(app.getView());
         this.cordova = ctx;
         this.appView = app;
         this.appView.getView().setXWalkWebChromeClient(new CordovaWebChromeClient(ctx.getActivity(), app));
@@ -324,7 +324,7 @@ public class XWalkCordovaChromeClient extends XWalkUIClientImpl implements Cordo
     private CordovaWebView appView;
 
     CordovaWebChromeClient(Context context, CordovaWebView view) {
-        super(context, (XWalkView) view);
+        super((XWalkView) view);
         appView = view;
     }
     

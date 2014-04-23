@@ -46,7 +46,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebResourceResponse;
 
 import org.chromium.net.NetError;
-import org.xwalk.core.XWalkResourceClientImpl;
+import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkView;
 import org.xwalk.core.XWalkClient;
 import org.xwalk.core.XWalkHttpAuthHandler;
@@ -63,7 +63,7 @@ import org.xwalk.core.XWalkHttpAuthHandler;
  * @see XwalkCordovaChromeClient
  * @see XWalkCordovaWebView
  */
-public class XWalkCordovaWebViewClient extends XWalkResourceClientImpl implements CordovaWebViewClient {
+public class XWalkCordovaWebViewClient extends XWalkResourceClient implements CordovaWebViewClient {
 
 	private static final String TAG = "CordovaWebViewClient";
 	private static final String CORDOVA_EXEC_URL_PREFIX = "http://cdv_exec/";
@@ -113,7 +113,7 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClientImpl implement
      * @param cordova
      */
     public XWalkCordovaWebViewClient(CordovaInterface cordova) {
-    	super(cordova.getActivity(), null);
+    	super(null);
         this.cordova = cordova;
     }
 
@@ -124,7 +124,7 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClientImpl implement
      * @param view
      */
     public XWalkCordovaWebViewClient(CordovaInterface cordova, XWalkCordovaWebView view) {
-    	super(cordova.getActivity(), view.getView());
+    	super(view.getView());
         this.cordova = cordova;
         this.appView = view;
         this.appView.getView().setXWalkClient(new CordovaInternalViewClient(view, cordova));
@@ -300,7 +300,7 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClientImpl implement
    private boolean doClearHistory = false;
 
    CordovaInternalViewClient(CordovaWebView view, CordovaInterface ci) {
-       super(((XWalkView)view).getActivity(), (XWalkView) view);
+       super((XWalkView) view);
        cordova = ci;
        appView = view;
    }
