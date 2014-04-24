@@ -993,14 +993,12 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
     @Override
     public void setWebViewClient(CordovaWebViewClient webViewClient) {
-    	// TODO(ningxin): need to fix makeWebViewClient.
-    	// this.webview.setResourceClient((XWalkResourceClient) webViewClient);
+        this.webview.setResourceClient((XWalkResourceClient) webViewClient);
     }
 
     @Override
     public void setWebChromeClient(CordovaChromeClient webChromeClient) {
-    	// TODO(ningxin): need to fix makeChromeClient.
-        // this.webview.setUIClient((XWalkUIClient) webChromeClient);
+        this.webview.setUIClient((XWalkUIClient) webChromeClient);
     }
 
     @Override
@@ -1099,7 +1097,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
     @Override
     public void setNetworkAvailable(boolean online) {
-        // TODO Auto-generated method stub
+        this.webview.setNetworkAvailable(online);
     }
 
     @Override
