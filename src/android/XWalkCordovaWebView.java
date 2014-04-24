@@ -81,7 +81,7 @@ import org.xwalk.core.XWalkWebChromeClient;
  */
 public class XWalkCordovaWebView implements CordovaWebView {
 
-    public static final String TAG = "CordovaWebView";
+    public static final String TAG = "XWalkCordovaWebView";
     public static final String CORDOVA_VERSION = "3.3.0";
 
     private ArrayList<Integer> keyDownCodes = new ArrayList<Integer>();

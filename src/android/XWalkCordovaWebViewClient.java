@@ -65,7 +65,7 @@ import org.xwalk.core.XWalkHttpAuthHandler;
  */
 public class XWalkCordovaWebViewClient extends XWalkResourceClient implements CordovaWebViewClient {
 
-	private static final String TAG = "CordovaWebViewClient";
+	private static final String TAG = "XWalkCordovaWebViewClient";
 	private static final String CORDOVA_EXEC_URL_PREFIX = "http://cdv_exec/";
     CordovaInterface cordova;
     XWalkCordovaWebView appView;
