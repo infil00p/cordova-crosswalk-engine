@@ -324,7 +324,7 @@ public class XWalkCordovaChromeClient extends XWalkUIClient implements CordovaCh
     private CordovaWebView appView;
 
     CordovaWebChromeClient(Context context, CordovaWebView view) {
-        super((XWalkView) view);
+        super((XWalkView) view.getView());
         appView = view;
     }
     
