@@ -64,7 +64,7 @@ import org.xwalk.core.XWalkView;
 public class XWalkCordovaChromeClient extends XWalkUIClient implements CordovaChromeClient {
 
     public static final int FILECHOOSER_RESULTCODE = 5173;
-    private static final String LOG_TAG = "CordovaChromeClient";
+    private static final String LOG_TAG = "XWalkCordovaChromeClient";
     private String TAG = "CordovaLog";
     private long MAX_QUOTA = 100 * 1024 * 1024;
     protected CordovaInterface cordova;
@@ -92,10 +92,10 @@ public class XWalkCordovaChromeClient extends XWalkUIClient implements CordovaCh
      * @param ctx
      * @param app
      */
-    public XWalkCordovaChromeClient(CordovaInterface ctx, XWalkCordovaWebView app) {
-        super(app.getView());
+    public XWalkCordovaChromeClient(CordovaInterface ctx, CordovaWebView app) {
+        super(((XWalkCordovaWebView) app).getView());
         this.cordova = ctx;
-        this.appView = app;
+        this.appView = (XWalkCordovaWebView) app;
         this.appView.getView().setXWalkWebChromeClient(new CordovaWebChromeClient(ctx.getActivity(), app));
     }
 

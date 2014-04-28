@@ -65,7 +65,7 @@ import org.xwalk.core.XWalkHttpAuthHandler;
  */
 public class XWalkCordovaWebViewClient extends XWalkResourceClient implements CordovaWebViewClient {
 
-	private static final String TAG = "CordovaWebViewClient";
+	private static final String TAG = "XWalkCordovaWebViewClient";
 	private static final String CORDOVA_EXEC_URL_PREFIX = "http://cdv_exec/";
     CordovaInterface cordova;
     XWalkCordovaWebView appView;
@@ -123,10 +123,10 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
      * @param cordova
      * @param view
      */
-    public XWalkCordovaWebViewClient(CordovaInterface cordova, XWalkCordovaWebView view) {
-    	super(view.getView());
+    public XWalkCordovaWebViewClient(CordovaInterface cordova, CordovaWebView view) {
+        super(((XWalkCordovaWebView) view).getView());
         this.cordova = cordova;
-        this.appView = view;
+        this.appView = (XWalkCordovaWebView) view;
         this.appView.getView().setXWalkClient(new CordovaInternalViewClient(view, cordova));
     }
 
