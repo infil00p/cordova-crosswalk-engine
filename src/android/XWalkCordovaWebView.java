@@ -159,8 +159,6 @@ public class XWalkCordovaWebView implements CordovaWebView {
         {
             Log.d(TAG, "Your activity must implement CordovaInterface to work");
         }
-        this.setWebChromeClient(new XWalkCordovaChromeClient(this.cordova, this));
-        this.initWebViewClient(this.cordova);
         this.loadConfiguration();
         this.setup();
     }
@@ -181,8 +179,6 @@ public class XWalkCordovaWebView implements CordovaWebView {
         {
             Log.d(TAG, "Your activity must implement CordovaInterface to work");
         }
-        this.setWebChromeClient(new XWalkCordovaChromeClient(this.cordova, this));
-        this.initWebViewClient(this.cordova);
         this.loadConfiguration();
         this.setup();
     }
@@ -205,7 +201,6 @@ public class XWalkCordovaWebView implements CordovaWebView {
         {
             Log.d(TAG, "Your activity must implement CordovaInterface to work");
         }
-        this.setWebChromeClient(new XWalkCordovaChromeClient(this.cordova, this));
         this.loadConfiguration();
         this.setup();
     }
@@ -229,15 +224,27 @@ public class XWalkCordovaWebView implements CordovaWebView {
         {
             Log.d(TAG, "Your activity must implement CordovaInterface to work");
         }
-        this.setWebChromeClient(new XWalkCordovaChromeClient(this.cordova));
-        this.initWebViewClient(this.cordova);
         this.loadConfiguration();
         this.setup();
     }
 
- 
-    private void initWebViewClient(CordovaInterface cordova) {
-            this.setWebViewClient(new XWalkCordovaWebViewClient(this.cordova, this));
+
+    /**
+     * Create a default WebViewClient object for this webview. This can be overridden by the
+     * main application's CordovaActivity subclass.
+     */
+    @Override
+    public CordovaWebViewClient makeWebViewClient() {
+        return new XWalkCordovaWebViewClient(this.cordova, this);
+    }
+
+    /**
+     * Create a default WebViewClient object for this webview. This can be overridden by the
+     * main application's CordovaActivity subclass.
+     */
+    @Override
+    public CordovaChromeClient makeWebChromeClient() {
+        return new XWalkCordovaChromeClient(this.cordova, this);
     }
 
     /**
