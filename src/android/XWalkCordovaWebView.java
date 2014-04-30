@@ -1138,4 +1138,8 @@ public class XWalkCordovaWebView implements CordovaWebView {
     public XWalkView getView() {
     	return this.webview;
     }
+
+
+
+
 }
