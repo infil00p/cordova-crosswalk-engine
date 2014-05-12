@@ -19,6 +19,9 @@
 package org.apache.cordova.engine.crosswalk;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import java.util.Hashtable;
 
 import org.apache.cordova.AuthenticationToken;
@@ -26,6 +29,9 @@ import org.apache.cordova.Config;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewClient;
+import org.apache.cordova.CordovaResourceApi;
+import org.apache.cordova.CordovaResourceApi.OpenForReadResult;
+
 import org.apache.cordova.LOG;
 import org.apache.cordova.NativeToJsMessageQueue;
 import org.json.JSONException;
@@ -636,6 +642,61 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
         //This should work, but may run into casting errors! 
         this.onReceivedLoadError((XWalkView) me.getView(), i, string, url);
         
+    }
+
+
+    @Override
+    public WebResourceResponse shouldInterceptLoadRequest(XWalkView view, String url) {
+        try {
+            // Check the against the white-list.
+            if ((url.startsWith("http:") || url.startsWith("https:")) && !Config.isUrlWhiteListed(url)) {
+                LOG.w(TAG, "URL blocked by whitelist: " + url);
+                // Results in a 404.
+                return new WebResourceResponse("text/plain", "UTF-8", null);
+            }
+
+            CordovaResourceApi resourceApi = appView.getResourceApi();
+            Uri origUri = Uri.parse(url);
+            // Allow plugins to intercept WebView requests.
+            Uri remappedUri = resourceApi.remapUri(origUri);
+
+            if (!origUri.equals(remappedUri) || needsSpecialsInAssetUrlFix(origUri) || needsKitKatContentUrlFix(origUri)) {
+                OpenForReadResult result = resourceApi.openForRead(remappedUri, true);
+                return new WebResourceResponse(result.mimeType, "UTF-8", result.inputStream);
+            }
+            // If we don't need to special-case the request, let the browser load it.
+            return null;
+        } catch (IOException e) {
+            if (!(e instanceof FileNotFoundException)) {
+                LOG.e("IceCreamCordovaWebViewClient", "Error occurred while loading a file (returning a 404).", e);
+            }
+            // Results in a 404.
+            return new WebResourceResponse("text/plain", "UTF-8", null);
+        }
+    }
+
+    private static boolean needsKitKatContentUrlFix(Uri uri) {
+        return android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && "content".equals(uri.getScheme());
+    }
+
+    private static boolean needsSpecialsInAssetUrlFix(Uri uri) {
+        if (CordovaResourceApi.getUriType(uri) != CordovaResourceApi.URI_TYPE_ASSET) {
+            return false;
+        }
+        if (uri.getQuery() != null || uri.getFragment() != null) {
+            return true;
+        }
+
+        if (!uri.toString().contains("%")) {
+            return false;
+        }
+
+        switch(android.os.Build.VERSION.SDK_INT){
+            case android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH:
+            case android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1:
+                return true;
+        }
+        return false;
     }
 
 }
