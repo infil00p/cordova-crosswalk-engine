@@ -19,7 +19,7 @@
 package org.apache.cordova.engine.crosswalk;
 
 //import android.webkit.JavascriptInterface;
-import org.chromium.content.browser.JavascriptInterface;
+import org.xwalk.core.JavascriptInterface;
 import org.apache.cordova.CordovaResourceApi;
 import org.apache.cordova.NativeToJsMessageQueue;
 import org.apache.cordova.PluginManager;

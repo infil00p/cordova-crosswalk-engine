@@ -1154,4 +1154,9 @@ public class XWalkCordovaWebView implements CordovaWebView {
         this.webview.stopLoading();
     }
 
+	@Override
+	public String getUrl() {
+		return this.webview.getUrl();
+	}
+
 }
