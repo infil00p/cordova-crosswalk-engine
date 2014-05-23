@@ -447,8 +447,10 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
     /**
      * Notify the host application that a page has started loading.
      * This method is called once for each main frame load so a page with iframes or framesets will call onPageStarted
-     * one time for the main frame. This also means that onPageStarted will not be called when the contents of an
-     * embedded frame changes, i.e. clicking a link whose target is an iframe.
+     * one time for the main frame.
+     *
+     * In Crosswalk, this method is called for iframe navigations where the scheme is something other than http or https,
+     * which includes assets with the Cordova project, so we have to test for that, and not reset plugins in that case.
      *
      * @param view          The webview initiating the callback.
      * @param url           The url of the page.
@@ -456,15 +458,18 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
     @Override
     public void onPageStarted(XWalkView view, String url) {
 
-        // Flush stale messages.
-        this.appView.resetJsMessageQueue();
+        // Only proceed if this is a top-level navigation
+        if (view.getUrl() != null && view.getUrl().equals(url)) {
+            // Flush stale messages.
+            this.appView.resetJsMessageQueue();
 
-        // Broadcast message that page has loaded
-        this.appView.postMessage("onPageStarted", url);
+            // Broadcast message that page has loaded
+            this.appView.postMessage("onPageStarted", url);
 
-        // Notify all plugins of the navigation, so they can clean up if necessary.
-        if (this.appView.getPluginManager() != null) {
-            this.appView.getPluginManager().onReset();
+            // Notify all plugins of the navigation, so they can clean up if necessary.
+            if (this.appView.getPluginManager() != null) {
+                this.appView.getPluginManager().onReset();
+            }
         }
     }
 
