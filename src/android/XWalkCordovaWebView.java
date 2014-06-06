@@ -150,7 +150,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
      * @param context
      */
     public XWalkCordovaWebView(Context context) {
-        this.webview = new XWalkView(context, (Activity)null);
+        this.webview = makeXWalkView(context);
         if (CordovaInterface.class.isInstance(context))
         {
             this.cordova = (CordovaInterface) context;
@@ -170,7 +170,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
      * @param attrs
      */
     public XWalkCordovaWebView(Context context, AttributeSet attrs) {
-        this.webview = new XWalkView(context, attrs);
+        this.webview = makeXWalkView(context);
         if (CordovaInterface.class.isInstance(context))
         {
             this.cordova = (CordovaInterface) context;
@@ -192,7 +192,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
      *
      */
     public XWalkCordovaWebView(Context context, AttributeSet attrs, int defStyle) {
-        this.webview = new XWalkView(context, attrs);
+        this.webview = makeXWalkView(context);
         if (CordovaInterface.class.isInstance(context))
         {
             this.cordova = (CordovaInterface) context;
@@ -215,7 +215,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
      */
     @TargetApi(11)
     public XWalkCordovaWebView(Context context, AttributeSet attrs, int defStyle, boolean privateBrowsing) {
-        this.webview = new XWalkView(context, attrs);
+        this.webview = makeXWalkView(context);
         if (CordovaInterface.class.isInstance(context))
         {
             this.cordova = (CordovaInterface) context;
@@ -228,6 +228,14 @@ public class XWalkCordovaWebView implements CordovaWebView {
         this.setup();
     }
 
+    /**
+     * Create a default XWalkView object. This can be overridden to use a custom XWalkView.
+     *
+     * @param context
+     */
+    public XWalkView makeXWalkView(Context context) {
+        return new XWalkView(context, (Activity)null);
+    }
 
     /**
      * Create a default WebViewClient object for this webview. This can be overridden by the
