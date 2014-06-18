@@ -463,7 +463,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
                 me.webview.stopLoading();
                 LOG.e(TAG, "CordovaWebView: TIMEOUT ERROR!");
                 if (viewClient != null) {
-                    viewClient.onReceivedError((CordovaWebView) me, -6, "The connection to the server was unsuccessful.", url);
+                    viewClient.onReceivedError(-6, "The connection to the server was unsuccessful.", url);
                 }
             }
         };

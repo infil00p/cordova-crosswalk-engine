@@ -75,6 +75,7 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
 	private static final String CORDOVA_EXEC_URL_PREFIX = "http://cdv_exec/";
     CordovaInterface cordova;
     XWalkCordovaWebView appView;
+    XWalkView webView;
     private boolean doClearHistory = false;
 
     // Success
@@ -129,11 +130,12 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
      * @param cordova
      * @param view
      */
-    public XWalkCordovaWebViewClient(CordovaInterface cordova, CordovaWebView view) {
+    public XWalkCordovaWebViewClient(CordovaInterface cordova, XWalkCordovaWebView view) {
         super(((XWalkCordovaWebView) view).getView());
         this.cordova = cordova;
-        this.appView = (XWalkCordovaWebView) view;
-        this.appView.getView().setXWalkClient(new CordovaInternalViewClient(view, cordova));
+        appView = view;
+        webView = view.getView();
+        webView.setXWalkClient(new CordovaInternalViewClient(view, cordova));
     }
 
     /**
@@ -636,17 +638,8 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
     }
 
     @Override
-    public void setWebView(CordovaWebView appView) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void onReceivedError(CordovaWebView me, int i, String string,
-            String url) {
-        //This should work, but may run into casting errors! 
-        this.onReceivedLoadError((XWalkView) me.getView(), i, string, url);
-        
+    public void onReceivedError(int errorCode, String description, String url) {
+        this.onReceivedLoadError(webView, errorCode, description, url);
     }
 
 
