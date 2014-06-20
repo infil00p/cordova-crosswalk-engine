@@ -19,8 +19,6 @@
 
 package org.apache.cordova.engine.crosswalk;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -34,19 +32,15 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewClient;
 import org.apache.cordova.LOG;
 import org.apache.cordova.NativeToJsMessageQueue;
-import org.apache.cordova.ExposedJsApi;
 import org.apache.cordova.PluginManager;
 import org.apache.cordova.PluginResult;
-import org.apache.cordova.ScrollEvent;
 import org.json.JSONException;
 
-import android.app.Activity;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -63,7 +57,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebChromeClient.CustomViewCallback;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout.LayoutParams;
 
 import org.xwalk.core.XWalkNavigationHistory;
 import org.xwalk.core.XWalkNavigationItem;
@@ -91,8 +84,8 @@ public class XWalkCordovaWebView implements CordovaWebView {
     private boolean paused;
 
     private BroadcastReceiver receiver;
-    
-    private XWalkView webview;
+
+    private CordovaXWalkView webview;
 
 
     /** Activities and other important classes **/
@@ -109,7 +102,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
     private boolean bound;
 
     private boolean handleButton = false;
-    
+
     private long lastMenuEventTime = 0;
 
     NativeToJsMessageQueue jsMessageQueue;
@@ -123,27 +116,25 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
     private CordovaResourceApi resourceApi;
 
-    class ActivityResult {
-        
+    private static class ActivityResult {
+
         int request;
         int result;
         Intent incoming;
-        
+
         public ActivityResult(int req, int res, Intent intent) {
             request = req;
             result = res;
             incoming = intent;
         }
-
-        
     }
-    
+
     static final FrameLayout.LayoutParams COVER_SCREEN_GRAVITY_CENTER =
             new FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT,
             Gravity.CENTER);
-    
+
     /**
      * Constructor.
      *
@@ -233,8 +224,8 @@ public class XWalkCordovaWebView implements CordovaWebView {
      *
      * @param context
      */
-    public XWalkView makeXWalkView(Context context) {
-        return new XWalkView(context, (Activity)null);
+    public CordovaXWalkView makeXWalkView(Context context) {
+        return new CordovaXWalkView(context, this);
     }
 
     /**
@@ -276,7 +267,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
         // nhu: N/A
         //settings.setSaveFormData(false);
         //settings.setSavePassword(false);
-        
+
         // Jellybean rightfully tried to lock this down. Too bad they didn't give us a whitelist
         // while we do this
         settings.setAllowUniversalAccessFromFileURLs(true);
@@ -286,16 +277,16 @@ public class XWalkCordovaWebView implements CordovaWebView {
         //settings.setDatabaseEnabled(true);
         //TODO: bring it back when it's ready in the XWalk.
         //settings.setDatabasePath(databasePath);
-        
-        
+
+
         //Determine whether we're in debug or release mode, and turn on Debugging!
         try {
             final String packageName = this.cordova.getActivity().getPackageName();
             final PackageManager pm = this.cordova.getActivity().getPackageManager();
             ApplicationInfo appInfo;
-            
+
             appInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-            
+
             if((appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0)
             {
             	XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
@@ -306,8 +297,8 @@ public class XWalkCordovaWebView implements CordovaWebView {
         } catch (NameNotFoundException e) {
             Log.d(TAG, "This should never happen: Your application's package can't be found.");
             e.printStackTrace();
-        }  
-        
+        }
+
         //settings.setGeolocationDatabasePath(databasePath);
 
         // Enable DOM storage
@@ -315,7 +306,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
         // Enable built-in geolocation
         settings.setGeolocationEnabled(true);
-        
+
         // Enable AppCache
         // Fix for CB-2282
         // nhu: N/A
@@ -334,7 +325,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
 	/**
 	 * Override this method to decide whether or not you need to request the
 	 * focus when your application start
-	 * 
+	 *
 	 * @return true unless this method is overriden to return a different value
 	 */
     protected boolean shouldRequestFocusOnInit() {
@@ -349,7 +340,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
             // Bug being that Java Strings do not get converted to JS strings automatically.
             // This isn't hard to work-around on the JS side, but it's easier to just
             // use the prompt bridge instead.
-            return;            
+            return;
         } else if (SDK_INT < Build.VERSION_CODES.HONEYCOMB && Build.MANUFACTURER.equals("unknown")) {
             // addJavascriptInterface crashes on the 2.3 emulator.
             Log.i(TAG, "Disabled addJavascriptInterface() bridge callback due to a bug on the 2.3 emulator");
@@ -377,7 +368,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
         this.chromeClient = client;
         this.webview.setUIClient(client);
     }
-    
+
     public XWalkCordovaChromeClient getWebChromeClient() {
         return this.chromeClient;
     }
@@ -405,7 +396,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
             }
         }
     }
-    
+
     public void loadUrl(String url) {
         load(url, null);
     }
@@ -536,8 +527,8 @@ public class XWalkCordovaWebView implements CordovaWebView {
         // Load url
         this.loadUrlIntoView(url);
     }
-    
-    
+
+
     // TODO(ningxin): XWalkViewUIClient should provide onScrollChanged callback
     /*
     public void onScrollChanged(int l, int t, int oldl, int oldt)
@@ -548,7 +539,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
         this.postMessage("onScrollChanged", myEvent);
     }
     */
-    
+
     /**
      * Send JavaScript statement back to JavaScript.
      * (This is a convenience method)
@@ -595,7 +586,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
         if (this.webview.getNavigationHistory().canGoBack()) {
             printBackForwardList();
             this.webview.getNavigationHistory().navigate(XWalkNavigationHistory.Direction.BACKWARD, 1);
-            
+
             return true;
         }
         return false;
@@ -662,7 +653,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
      *      <log level="DEBUG" />
      */
     private void loadConfiguration() {
- 
+
         if ("true".equals(this.getProperty("Fullscreen", "false"))) {
             this.cordova.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             this.cordova.getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -689,114 +680,6 @@ public class XWalkCordovaWebView implements CordovaWebView {
         return p.toString();
     }
 
-    /*
-     * onKeyDown
-     */
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
-        if(keyDownCodes.contains(keyCode))
-        {
-            if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-                    // only override default behavior is event bound
-                    LOG.d(TAG, "Down Key Hit");
-                    this.loadUrl("javascript:cordova.fireDocumentEvent('volumedownbutton');");
-                    return true;
-            }
-            // If volumeup key
-            else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-                    LOG.d(TAG, "Up Key Hit");
-                    this.loadUrl("javascript:cordova.fireDocumentEvent('volumeupbutton');");
-                    return true;
-            }
-            else
-            {
-                return this.webview.onKeyDown(keyCode, event);
-            }
-        }
-        else if(keyCode == KeyEvent.KEYCODE_BACK)
-        {
-            return !(this.startOfHistory()) || this.bound;
-        }
-        else if(keyCode == KeyEvent.KEYCODE_MENU)
-        {
-            //How did we get here?  Is there a childView?
-            View childView = (View) this.getFocusedChild();
-            if(childView != null)
-            {
-                //Make sure we close the keyboard if it's present
-                InputMethodManager imm = (InputMethodManager) cordova.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(childView.getWindowToken(), 0);
-                cordova.getActivity().openOptionsMenu();
-                return true;
-            } else {
-                return this.webview.onKeyDown(keyCode, event);
-            }
-        }
-        
-        return this.webview.onKeyDown(keyCode, event);
-    }
-    
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event)
-    {
-        // If back key
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            // A custom view is currently displayed  (e.g. playing a video)
-            if (this.webview.hasEnteredFullscreen()) {
-                this.webview.leaveFullscreen();
-                return true;
-            } else if (mCustomView != null) {
-                this.hideCustomView();
-                return true;
-            } else {
-                // The webview is currently displayed
-                // If back key is bound, then send event to JavaScript
-                if (this.bound) {
-                    this.loadUrl("javascript:cordova.fireDocumentEvent('backbutton');");
-                    return true;
-                } else {
-                    // If not bound
-                    // Go to previous page in webview if it is possible to go back
-                    if (this.backHistory()) {
-                        return true;
-                    }
-                    // If not, then invoke default behaviour
-                    else {
-                        //this.activityState = ACTIVITY_EXITING;
-                    	//return false;
-                    	// If they hit back button when app is initializing, app should exit instead of hang until initilazation (CB2-458)
-                    	this.cordova.getActivity().finish();
-                    	return false;
-                    }
-                }
-            }
-        }
-        // Legacy
-        else if (keyCode == KeyEvent.KEYCODE_MENU) {
-            if (this.lastMenuEventTime < event.getEventTime()) {
-                this.loadUrl("javascript:cordova.fireDocumentEvent('menubutton');");
-            }
-            this.lastMenuEventTime = event.getEventTime();
-            return this.webview.onKeyUp(keyCode, event);
-        }
-        // If search key
-        else if (keyCode == KeyEvent.KEYCODE_SEARCH) {
-            this.loadUrl("javascript:cordova.fireDocumentEvent('searchbutton');");
-            return true;
-        }
-        else if(keyUpCodes.contains(keyCode))
-        {
-            //What the hell should this do?
-            return this.webview.onKeyUp(keyCode, event);
-        }
-
-        //Does webkit change this behavior?
-        return this.webview.onKeyUp(keyCode, event);
-    }
-
-    
     public void bindButton(boolean override)
     {
         this.bound = override;
@@ -827,7 +710,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
     {
         return this.bound;
     }
-    
+
     public void handlePause(boolean keepRunning)
     {
         LOG.d(TAG, "Handle the pause");
@@ -846,14 +729,14 @@ public class XWalkCordovaWebView implements CordovaWebView {
         }
         this.webview.onHide();
         paused = true;
-   
+
     }
-    
+
     public void handleResume(boolean keepRunning, boolean activityResultKeepRunning)
     {
 
         this.loadUrl("javascript:try{cordova.fireDocumentEvent('resume');}catch(e){console.log('exception firing resume event from native');};");
-        
+
         // Forward to plugins
         if (this.pluginManager != null) {
             this.pluginManager.onResume(keepRunning);
@@ -864,7 +747,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
         this.webview.onShow();
         paused = false;
     }
-    
+
     public void handleDestroy()
     {
         // Send destroy event to JavaScript
@@ -877,7 +760,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
         if (this.pluginManager != null) {
             this.pluginManager.onDestroy();
         }
-        
+
         // unregister the receiver
         if (this.receiver != null) {
             try {
@@ -886,10 +769,10 @@ public class XWalkCordovaWebView implements CordovaWebView {
                 Log.e(TAG, "Error unregistering configuration receiver: " + e.getMessage(), e);
             }
         }
-        
+
         this.webview.onDestroy();
     }
-    
+
     public void onNewIntent(Intent intent)
     {
     	if (this.webview.onNewIntent(intent)) return;
@@ -899,7 +782,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
         }
         return;
     }
-    
+
     public boolean isPaused()
     {
         return paused;
@@ -920,8 +803,8 @@ public class XWalkCordovaWebView implements CordovaWebView {
             LOG.d(TAG, "The URL at index: " + Integer.toString(i) + " is " + url );
         }
     }
-    
-    
+
+
     //Can Go Back is BROKEN!
     public boolean startOfHistory()
     {
@@ -945,18 +828,18 @@ public class XWalkCordovaWebView implements CordovaWebView {
             callback.onCustomViewHidden();
             return;
         }
-        
+
         // Store the view and its callback for later (to kill it properly)
         mCustomView = view;
         mCustomViewCallback = callback;
-        
+
         // Add the custom view to its container.
         ViewGroup parent = (ViewGroup) this.getParent();
         parent.addView(view, COVER_SCREEN_GRAVITY_CENTER);
-        
+
         // Hide the content view.
         this.setVisibility(View.GONE);
-        
+
         // Finally show the custom view container.
         parent.setVisibility(View.VISIBLE);
         parent.bringToFront();
@@ -969,27 +852,27 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
         // Hide the custom view.
         mCustomView.setVisibility(View.GONE);
-        
+
         // Remove the custom view from its container.
         ViewGroup parent = (ViewGroup) this.getParent();
         parent.removeView(mCustomView);
         mCustomView = null;
         mCustomViewCallback.onCustomViewHidden();
-        
+
         // Show the content view.
         this.setVisibility(View.VISIBLE);
     }
-    
+
     /**
-     * if the video overlay is showing then we need to know 
+     * if the video overlay is showing then we need to know
      * as it effects back button handling
-     * 
+     *
      * @return true if custom view is showing
      */
     public boolean isCustomViewShowing() {
         return mCustomView != null;
     }
-    
+
     public boolean restoreState(Bundle savedInstanceState)
     {
     	boolean result = this.webview.restoreState(savedInstanceState);
@@ -1002,7 +885,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
     public void storeResult(int requestCode, int resultCode, Intent intent) {
         mResult = new ActivityResult(requestCode, resultCode, intent);
     }
-    
+
     public CordovaResourceApi getResourceApi() {
         return resourceApi;
     }
@@ -1142,7 +1025,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
 			android.widget.FrameLayout.LayoutParams layoutParams) {
 		this.webview.setLayoutParams(layoutParams);
 	}
-	
+
 	@Override
     public XWalkView getView() {
     	return this.webview;
@@ -1158,4 +1041,111 @@ public class XWalkCordovaWebView implements CordovaWebView {
 		return this.webview.getUrl();
 	}
 
+	public static class CordovaXWalkView extends XWalkView {
+
+        protected XWalkCordovaWebView cordovaWebView;
+
+        public CordovaXWalkView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        public CordovaXWalkView(Context context, XWalkCordovaWebView cordovaWebView) {
+            this(context, (AttributeSet)null);
+            this.cordovaWebView = cordovaWebView;
+        }
+
+        public void setCordovaWebView(XWalkCordovaWebView cordovaWebView) {
+            this.cordovaWebView = cordovaWebView;
+        }
+
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent event) {
+            int keyCode = event.getKeyCode();
+            if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                if(cordovaWebView.keyDownCodes.contains(keyCode))
+                {
+                    if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+                            // only override default behavior is event bound
+                            LOG.d(TAG, "Down Key Hit");
+                            cordovaWebView.loadUrl("javascript:cordova.fireDocumentEvent('volumedownbutton');");
+                            return true;
+                    }
+                    // If volumeup key
+                    else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                            LOG.d(TAG, "Up Key Hit");
+                            cordovaWebView.loadUrl("javascript:cordova.fireDocumentEvent('volumeupbutton');");
+                            return true;
+                    }
+                }
+                else if(keyCode == KeyEvent.KEYCODE_BACK)
+                {
+                    return !(cordovaWebView.startOfHistory()) || cordovaWebView.bound;
+                }
+                else if(keyCode == KeyEvent.KEYCODE_MENU)
+                {
+                    //How did we get here?  Is there a childView?
+                    View childView = (View) this.getFocusedChild();
+                    if(childView != null)
+                    {
+                        //Make sure we close the keyboard if it's present
+                        InputMethodManager imm = (InputMethodManager) cordovaWebView.cordova.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(childView.getWindowToken(), 0);
+                        cordovaWebView.cordova.getActivity().openOptionsMenu();
+                        return true;
+                    }
+                }
+            } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    // A custom view is currently displayed  (e.g. playing a video)
+                    if (hasEnteredFullscreen()) {
+                        leaveFullscreen();
+                        return true;
+                    } else if (cordovaWebView.mCustomView != null) {
+                        cordovaWebView.hideCustomView();
+                        return true;
+                    } else {
+                        // The webview is currently displayed
+                        // If back key is bound, then send event to JavaScript
+                        if (cordovaWebView.bound) {
+                            cordovaWebView.loadUrl("javascript:cordova.fireDocumentEvent('backbutton');");
+                            return true;
+                        } else {
+                            // If not bound
+                            // Go to previous page in webview if it is possible to go back
+                            if (cordovaWebView.backHistory()) {
+                                return true;
+                            }
+                            // If not, then invoke default behaviour
+                            else {
+                                //this.activityState = ACTIVITY_EXITING;
+                                //return false;
+                                Log.d(TAG, "Finishing activity due to back button.");
+                                // If they hit back button when app is initializing, app should exit instead of hang until initilazation (CB2-458)
+                                cordovaWebView.cordova.getActivity().finish();
+                                return false;
+                            }
+                        }
+                    }
+                }
+                // Legacy
+                else if (keyCode == KeyEvent.KEYCODE_MENU) {
+                    if (cordovaWebView.lastMenuEventTime < event.getEventTime()) {
+                        cordovaWebView.loadUrl("javascript:cordova.fireDocumentEvent('menubutton');");
+                    }
+                    cordovaWebView.lastMenuEventTime = event.getEventTime();
+                }
+                // If search key
+                else if (keyCode == KeyEvent.KEYCODE_SEARCH) {
+                    cordovaWebView.loadUrl("javascript:cordova.fireDocumentEvent('searchbutton');");
+                    return true;
+                }
+                else if (cordovaWebView.keyUpCodes.contains(keyCode))
+                {
+                    //What the hell should this do?
+                }
+            }
+
+            return super.dispatchKeyEvent(event);
+        }
+	}
 }
