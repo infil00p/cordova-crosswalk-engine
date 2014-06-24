@@ -21,9 +21,7 @@ package org.apache.cordova.engine.crosswalk;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import java.util.Hashtable;
-
 import org.apache.cordova.AuthenticationToken;
 import org.apache.cordova.Config;
 import org.apache.cordova.CordovaInterface;
@@ -31,12 +29,10 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewClient;
 import org.apache.cordova.CordovaResourceApi;
 import org.apache.cordova.CordovaResourceApi.OpenForReadResult;
-
 import org.apache.cordova.LOG;
 import org.apache.cordova.NativeToJsMessageQueue;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -46,11 +42,11 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.webkit.ValueCallback;
 import android.webkit.WebResourceResponse;
-
 import org.chromium.net.NetError;
 import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkView;
@@ -69,6 +65,7 @@ import org.xwalk.core.XWalkHttpAuthHandler;
  * @see XwalkCordovaChromeClient
  * @see XWalkCordovaWebView
  */
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class XWalkCordovaWebViewClient extends XWalkResourceClient implements CordovaWebViewClient {
 
 	private static final String TAG = "XWalkCordovaWebViewClient";
@@ -76,7 +73,6 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
     CordovaInterface cordova;
     XWalkCordovaWebView appView;
     XWalkView webView;
-    private boolean doClearHistory = false;
 
     // Success
     public static final int ERROR_OK = 0;
@@ -304,10 +300,9 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
    // Don't add extra indents for keeping them with upstream to avoid
    // merge conflicts.
    CordovaInterface cordova;
-   CordovaWebView appView;
-   private boolean doClearHistory = false;
+   XWalkCordovaWebView appView;
 
-   CordovaInternalViewClient(CordovaWebView view, CordovaInterface ci) {
+   CordovaInternalViewClient(XWalkCordovaWebView view, CordovaInterface ci) {
        super((XWalkView) view.getView());
        cordova = ci;
        appView = view;
@@ -463,15 +458,9 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
         // Only proceed if this is a top-level navigation
         if (view.getUrl() != null && view.getUrl().equals(url)) {
             // Flush stale messages.
-            this.appView.resetJsMessageQueue();
-
+            this.appView.onPageReset();
             // Broadcast message that page has loaded
             this.appView.postMessage("onPageStarted", url);
-
-            // Notify all plugins of the navigation, so they can clean up if necessary.
-            if (this.appView.getPluginManager() != null) {
-                this.appView.getPluginManager().onReset();
-            }
         }
     }
 
@@ -487,18 +476,6 @@ public class XWalkCordovaWebViewClient extends XWalkResourceClient implements Co
     public void onPageFinished(XWalkView view, String url) {
         super.onPageFinished(view, url);
         LOG.d(TAG, "onPageFinished(" + url + ")");
-
-        /**
-         * Because of a timing issue we need to clear this history in onPageFinished as well as
-         * onPageStarted. However we only want to do this if the doClearHistory boolean is set to
-         * true. You see when you load a url with a # in it which is common in jQuery applications
-         * onPageStared is not called. Clearing the history at that point would break jQuery apps.
-         */
-        if (this.doClearHistory) {
-            view.getNavigationHistory().clear();
-            this.doClearHistory = false;
-        }
-
         // Clear timeout flag
         ((XWalkCordovaWebView) this.appView).loadUrlTimeout++;
 
