@@ -77,8 +77,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
     public static final String TAG = "XWalkCordovaWebView";
     public static final String CORDOVA_VERSION = "3.3.0";
 
-    private ArrayList<Integer> keyDownCodes = new ArrayList<Integer>();
-    private ArrayList<Integer> keyUpCodes = new ArrayList<Integer>();
+    private ArrayList<Integer> boundKeyCodes = new ArrayList<Integer>();
 
     public PluginManager pluginManager;
     private boolean paused;
@@ -98,10 +97,6 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
     // Flag to track that a loadUrl timeout occurred
     int loadUrlTimeout = 0;
-
-    private boolean bound;
-
-    private boolean handleButton = false;
 
     private long lastMenuEventTime = 0;
 
@@ -680,35 +675,22 @@ public class XWalkCordovaWebView implements CordovaWebView {
         return p.toString();
     }
 
-    public void bindButton(boolean override)
-    {
-        this.bound = override;
+    public void setButtonPlumbedToJs(int keyCode, boolean value) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_BACK:
+                // TODO: Why are search and menu buttons handled separately?
+                boundKeyCodes.add(keyCode);
+                return;
+            default:
+                throw new IllegalArgumentException("Unsupported keycode: " + keyCode);
+        }
     }
 
-    public void bindButton(String button, boolean override) {
-        // TODO Auto-generated method stub
-        if (button.compareTo("volumeup")==0) {
-          keyDownCodes.add(KeyEvent.KEYCODE_VOLUME_UP);
-        }
-        else if (button.compareTo("volumedown")==0) {
-          keyDownCodes.add(KeyEvent.KEYCODE_VOLUME_DOWN);
-        }
-      }
-
-    public void bindButton(int keyCode, boolean keyDown, boolean override) {
-       if(keyDown)
-       {
-           keyDownCodes.add(keyCode);
-       }
-       else
-       {
-           keyUpCodes.add(keyCode);
-       }
-    }
-
-    public boolean isBackButtonBound()
+    public boolean isButtonPlumbedToJs(int keyCode)
     {
-        return this.bound;
+        return boundKeyCodes.contains(keyCode);
     }
 
     public void handlePause(boolean keepRunning)
@@ -788,14 +770,11 @@ public class XWalkCordovaWebView implements CordovaWebView {
         return paused;
     }
 
-    public boolean hadKeyEvent() {
-        return handleButton;
-    }
-
-
     public void printBackForwardList() {
     	XWalkNavigationHistory currentList = this.webview.getNavigationHistory();
     	int currentSize = currentList.size();
+        LOG.d(TAG, "My URL is " + webview.getUrl());
+        LOG.d(TAG, "navigation history:");
         for(int i = 0; i < currentSize; ++i)
         {
         	XWalkNavigationItem item = currentList.getItemAt(i);
@@ -1062,24 +1041,21 @@ public class XWalkCordovaWebView implements CordovaWebView {
         public boolean dispatchKeyEvent(KeyEvent event) {
             int keyCode = event.getKeyCode();
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                if(cordovaWebView.keyDownCodes.contains(keyCode))
+                if(cordovaWebView.boundKeyCodes.contains(keyCode))
                 {
                     if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-                            // only override default behavior is event bound
-                            LOG.d(TAG, "Down Key Hit");
                             cordovaWebView.loadUrl("javascript:cordova.fireDocumentEvent('volumedownbutton');");
                             return true;
                     }
                     // If volumeup key
                     else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-                            LOG.d(TAG, "Up Key Hit");
                             cordovaWebView.loadUrl("javascript:cordova.fireDocumentEvent('volumeupbutton');");
                             return true;
                     }
                 }
                 else if(keyCode == KeyEvent.KEYCODE_BACK)
                 {
-                    return !(cordovaWebView.startOfHistory()) || cordovaWebView.bound;
+                    return !(cordovaWebView.startOfHistory()) || cordovaWebView.isButtonPlumbedToJs(KeyEvent.KEYCODE_BACK);
                 }
                 else if(keyCode == KeyEvent.KEYCODE_MENU)
                 {
@@ -1106,7 +1082,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
                     } else {
                         // The webview is currently displayed
                         // If back key is bound, then send event to JavaScript
-                        if (cordovaWebView.bound) {
+                        if (cordovaWebView.isButtonPlumbedToJs(KeyEvent.KEYCODE_BACK)) {
                             cordovaWebView.loadUrl("javascript:cordova.fireDocumentEvent('backbutton');");
                             return true;
                         } else {
@@ -1138,10 +1114,6 @@ public class XWalkCordovaWebView implements CordovaWebView {
                 else if (keyCode == KeyEvent.KEYCODE_SEARCH) {
                     cordovaWebView.loadUrl("javascript:cordova.fireDocumentEvent('searchbutton');");
                     return true;
-                }
-                else if (cordovaWebView.keyUpCodes.contains(keyCode))
-                {
-                    //What the hell should this do?
                 }
             }
 
