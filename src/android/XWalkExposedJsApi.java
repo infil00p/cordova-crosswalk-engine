@@ -20,66 +20,34 @@ package org.apache.cordova.engine.crosswalk;
 
 //import android.webkit.JavascriptInterface;
 import org.xwalk.core.JavascriptInterface;
-import org.apache.cordova.CordovaResourceApi;
-import org.apache.cordova.NativeToJsMessageQueue;
-import org.apache.cordova.PluginManager;
+import org.apache.cordova.CordovaBridge;
+import org.apache.cordova.ExposedJsApi;
 import org.json.JSONException;
 
 import android.os.Looper;
 
-/**
- * Contains APIs that the JS can call. All functions in here should also have
- * an equivalent entry in CordovaChromeClient.java, and be added to
- * cordova-js/lib/android/plugin/android/promptbasednativeapi.js
- */
-/* package */ class XWalkExposedJsApi {
-    
-    private PluginManager pluginManager;
-    private NativeToJsMessageQueue jsMessageQueue;
-    
-    public XWalkExposedJsApi(PluginManager pluginManager, NativeToJsMessageQueue jsMessageQueue) {
-        this.pluginManager = pluginManager;
-        this.jsMessageQueue = jsMessageQueue;
+class XWalkExposedJsApi implements ExposedJsApi {
+    private final CordovaBridge bridge;
+
+    XWalkExposedJsApi(CordovaBridge bridge) {
+        this.bridge = bridge;
     }
 
     @JavascriptInterface
-    public String exec(String service, String action, String callbackId, String arguments) throws JSONException {
-        // If the arguments weren't received, send a message back to JS.  It will switch bridge modes and try again.  See CB-2666.
-        // We send a message meant specifically for this case.  It starts with "@" so no other message can be encoded into the same string.
+    public String exec(int bridgeSecret, String service, String action, String callbackId, String arguments) throws JSONException, IllegalAccessException {
         if (Looper.myLooper() == null) {
             Looper.prepare();
         }
-
-        if (arguments == null) {
-            return "@Null arguments.";
-        }
-
-        jsMessageQueue.setPaused(true);
-        try {
-            // Tell the resourceApi what thread the JS is running on.
-            CordovaResourceApi.jsThread = Thread.currentThread();
-            
-            pluginManager.exec(service, action, callbackId, arguments);
-            String ret = "";
-            if (!NativeToJsMessageQueue.DISABLE_EXEC_CHAINING) {
-                ret = jsMessageQueue.popAndEncode(false);
-            }
-            return ret;
-        } catch (Throwable e) {
-            e.printStackTrace();
-            return "";
-        } finally {
-            jsMessageQueue.setPaused(false);
-        }
+        return bridge.jsExec(bridgeSecret, service, action, callbackId, arguments);
     }
-    
+
     @JavascriptInterface
-    public void setNativeToJsBridgeMode(int value) {
-        jsMessageQueue.setBridgeMode(value);
+    public void setNativeToJsBridgeMode(int bridgeSecret, int value) throws IllegalAccessException {
+        bridge.jsSetNativeToJsBridgeMode(bridgeSecret, value);
     }
-    
+
     @JavascriptInterface
-    public String retrieveJsMessages(boolean fromOnlineEvent) {
-        return jsMessageQueue.popAndEncode(fromOnlineEvent);
+    public String retrieveJsMessages(int bridgeSecret, boolean fromOnlineEvent) throws IllegalAccessException {
+        return bridge.jsRetrieveJsMessages(bridgeSecret, fromOnlineEvent);
     }
 }

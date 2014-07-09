@@ -21,10 +21,13 @@
             <preference name="webView" value="org.apache.cordova.engine.crosswalk.XWalkCordovaWebView" />
         </config-file>
 
-        <source-file src="src/android/XWalkCordovaChromeClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
-        <source-file src="src/android/XWalkCordovaWebViewClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
         <source-file src="src/android/XWalkCordovaWebView.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
         <source-file src="src/android/XWalkExposedJsApi.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
+        <source-file src="src/android/XWalkCordovaClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
+        <source-file src="src/android/XWalkCordovaResourceClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
+        <source-file src="src/android/XWalkCordovaUiClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
+        <source-file src="src/android/XWalkCordovaView.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
+        <source-file src="src/android/XWalkCordovaWebChromeClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
 
     </platform>
     </plugin>
