@@ -598,6 +598,11 @@ public class XWalkCordovaWebView implements CordovaWebView {
     }
 
     @Override
+    public String getUrl() {
+        return this.webview.getUrl();
+    }
+
+    @Override
     public Whitelist getWhitelist() {
         return whitelist;
     }
