@@ -55,7 +55,6 @@ import android.widget.FrameLayout;
 import org.xwalk.core.XWalkNavigationHistory;
 import org.xwalk.core.XWalkNavigationItem;
 import org.xwalk.core.XWalkPreferences;
-import org.xwalk.core.XWalkSettings;
 import org.xwalk.core.XWalkView;
 /*
  * This class is our web view.
@@ -134,35 +133,12 @@ public class XWalkCordovaWebView implements CordovaWebView {
         if (shouldRequestFocusOnInit()) {
             this.webview.requestFocusFromTouch();
         }
-        // Enable JavaScript
-        final XWalkSettings settings = this.webview.getSettings();
-        settings.setJavaScriptEnabled(true);
-        settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        settings.setAllowUniversalAccessFromFileURLs(true);
-        
-        // Enable database
-        // We keep this disabled because we use or shim to get around DOM_EXCEPTION_ERROR_16
-        String databasePath = webview.getContext().getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath();
-        //settings.setDatabaseEnabled(true);
-        //TODO: bring it back when it's ready in the XWalk.
-        //settings.setDatabasePath(databasePath);
         
         //Determine whether we're in debug or release mode, and turn on Debugging!
         ApplicationInfo appInfo = webview.getContext().getApplicationContext().getApplicationInfo();
         if ((appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
         }
-        
-        // Enable DOM storage
-        settings.setDomStorageEnabled(true);
-
-        // Enable built-in geolocation
-        settings.setGeolocationEnabled(true);
-        
-        // Enable AppCache
-        // Fix for CB-2282
-        settings.setAppCachePath(databasePath);
-        settings.setAppCacheEnabled(true);
     }
 
     /**
@@ -630,5 +606,14 @@ public class XWalkCordovaWebView implements CordovaWebView {
     @Override
     public void loadUrl(String url) {
         loadUrlIntoView(url, true);
+    }
+
+    static {
+        // XWalkPreferencesInternal.ENABLE_JAVASCRIPT
+        XWalkPreferences.setValue("enable-javascript", true);
+        // XWalkPreferencesInternal.JAVASCRIPT_CAN_OPEN_WINDOW
+        XWalkPreferences.setValue("javascript-can-open-window", true);
+        // XWalkPreferencesInternal.ALLOW_UNIVERSAL_ACCESS_FROM_FILE
+        XWalkPreferences.setValue("allow-universal-access-from-file", true);
     }
 }

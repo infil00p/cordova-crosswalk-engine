@@ -1,10 +1,8 @@
 package org.apache.cordova.engine.crosswalk;
 
-import org.xwalk.core.XWalkClient;
 import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkUIClient;
 import org.xwalk.core.XWalkView;
-import org.xwalk.core.XWalkWebChromeClient;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -15,8 +13,6 @@ import android.view.inputmethod.InputMethodManager;
 public class XWalkCordovaView extends XWalkView {
     protected XWalkCordovaResourceClient resourceClient;
     protected XWalkCordovaUiClient uiClient;
-    protected XWalkCordovaClient client;
-    protected XWalkCordovaWebChromeClient chromeClient;
 
     protected XWalkCordovaWebView cordovaWebView;
     private long lastMenuEventTime = 0;
@@ -32,12 +28,6 @@ public class XWalkCordovaView extends XWalkView {
         }
         if (uiClient == null) {
             setUIClient(new XWalkCordovaUiClient(webView));
-        }
-        if (client == null) {
-            setXWalkClient(new XWalkCordovaClient(webView));
-        }
-        if (chromeClient == null) {
-            setXWalkWebChromeClient(new XWalkCordovaWebChromeClient(webView));
         }
     }
 
@@ -57,24 +47,6 @@ public class XWalkCordovaView extends XWalkView {
             this.uiClient = (XWalkCordovaUiClient)client;
         }
         super.setUIClient(client);
-    }
-
-    @Override
-    public void setXWalkClient(XWalkClient client) {
-        // XWalk calls this method from its constructor.
-        if (client instanceof XWalkCordovaClient) {
-            this.client = (XWalkCordovaClient)client;
-        }
-        super.setXWalkClient(client);
-    }
-
-    @Override
-    public void setXWalkWebChromeClient(XWalkWebChromeClient client) {
-        // XWalk calls this method from its constructor.
-        if (client instanceof XWalkCordovaWebChromeClient) {
-            this.chromeClient = (XWalkCordovaWebChromeClient)client;
-        }
-        super.setXWalkWebChromeClient(client);
     }
 
     @Override

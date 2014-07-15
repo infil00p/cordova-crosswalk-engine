@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.cordova.CordovaResourceApi;
+import org.apache.cordova.CordovaUriHelper;
 import org.apache.cordova.CordovaResourceApi.OpenForReadResult;
 import org.apache.cordova.LOG;
 
@@ -51,6 +52,7 @@ public class XWalkCordovaResourceClient extends XWalkResourceClient {
 
 	static final String TAG = "XWalkCordovaWebViewClient";
     XWalkCordovaWebView appView;
+    private CordovaUriHelper helper;
 
     // Success
     public static final int ERROR_OK = 0;
@@ -88,6 +90,7 @@ public class XWalkCordovaResourceClient extends XWalkResourceClient {
     public XWalkCordovaResourceClient(XWalkCordovaWebView view) {
         super(view.getView());
         appView = view;
+        helper = new CordovaUriHelper(appView.cordova, appView);
     }
 
     // Map XWalk error code about loading a page to Android specific ones.
@@ -233,6 +236,11 @@ public class XWalkCordovaResourceClient extends XWalkResourceClient {
             // Results in a 404.
             return new WebResourceResponse("text/plain", "UTF-8", null);
         }
+    }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(XWalkView view, String url) {
+        return helper.shouldOverrideUrlLoading(url);
     }
 
     private static boolean needsKitKatContentUrlFix(Uri uri) {

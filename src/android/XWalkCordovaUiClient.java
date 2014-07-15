@@ -21,8 +21,10 @@ package org.apache.cordova.engine.crosswalk;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.EditText;
 
+import org.apache.cordova.LOG;
 import org.xwalk.core.XWalkJavascriptResult;
 import org.xwalk.core.XWalkUIClient;
 import org.xwalk.core.XWalkView;
@@ -194,5 +196,68 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
             dlg.show();
         }
         return true;
+    }
+
+    /**
+     * Notify the host application that a page has started loading.
+     * This method is called once for each main frame load so a page with iframes or framesets will call onPageStarted
+     * one time for the main frame. This also means that onPageStarted will not be called when the contents of an
+     * embedded frame changes, i.e. clicking a link whose target is an iframe.
+     *
+     * @param view          The webview initiating the callback.
+     * @param url           The url of the page.
+     */
+    @Override
+    public void onPageLoadStarted(XWalkView view, String url) {
+
+        // Only proceed if this is a top-level navigation
+        if (view.getUrl() != null && view.getUrl().equals(url)) {
+            // Flush stale messages.
+            appView.onPageReset();
+            // Broadcast message that page has loaded
+            appView.getPluginManager().postMessage("onPageStarted", url);
+        }
+    }
+
+    /**
+     * Notify the host application that a page has stopped loading.
+     * This method is called only for main frame. When onPageLoadStopped() is called, the rendering picture may not be updated yet.
+     *
+     *
+     * @param view          The webview initiating the callback.
+     * @param url           The url of the page.
+     * @param status        The load status of the webview, can be FINISHED, CANCELLED or FAILED.
+     */
+    @Override
+    public void onPageLoadStopped(XWalkView view, String url, LoadStatus status) {
+        LOG.d(XWalkCordovaResourceClient.TAG, "onPageFinished(" + url + ")");
+        // Clear timeout flag
+        appView.loadUrlTimeout++;
+
+        // Broadcast message that page has loaded
+        appView.getPluginManager().postMessage("onPageFinished", url);
+
+        // Make app visible after 2 sec in case there was a JS error and Cordova JS never initialized correctly
+        if (appView.getView().getVisibility() == View.INVISIBLE) {
+            Thread t = new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        Thread.sleep(2000);
+                        appView.cordova.getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                appView.getPluginManager().postMessage("spinner", "stop");
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                    }
+                }
+            });
+            t.start();
+        }
+
+        // Shutdown if blank loaded
+        if (url.equals("about:blank")) {
+            appView.getPluginManager().postMessage("exit", null);
+        }
     }
 }
