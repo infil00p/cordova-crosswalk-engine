@@ -12,9 +12,9 @@
     <issue></issue>
 
     <engines>
-      <engine name="cordova" version=">=3.4.0" /><!-- Needs cordova/urlutil -->
+      <engine name="cordova" version=">=4.0.0-dev" />
     </engines>
-    
+
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
@@ -27,5 +27,6 @@
         <source-file src="src/android/XWalkCordovaUiClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
         <source-file src="src/android/XWalkCordovaView.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
 
+        <framework src="libs/xwalk_core_library" custom="true" />
     </platform>
-    </plugin>
+</plugin>
