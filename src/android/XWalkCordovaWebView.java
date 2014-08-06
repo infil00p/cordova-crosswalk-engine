@@ -378,8 +378,6 @@ public class XWalkCordovaWebView implements CordovaWebView {
             // Pause JavaScript timers (including setInterval)
             this.webview.pauseTimers();
         }
-        this.webview.onHide();
-
     }
 
     @Override
@@ -394,7 +392,6 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
         // Resume JavaScript timers (including setInterval)
         this.webview.resumeTimers();
-        this.webview.onShow();
     }
 
     @Override
