@@ -12,7 +12,7 @@
     <issue></issue>
 
     <engines>
-      <engine name="cordova" version=">=4.0.0-dev" />
+      <engine name="cordova-android" version=">=4.0.0-dev" />
     </engines>
 
     <!-- android -->
