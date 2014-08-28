@@ -19,3 +19,4 @@ download() {
 
 download $ARM_DOWNLOAD
 download $X86_DOWNLOAD
+cp build.gradle.template libs/xwalk_core_library/build.gradle
