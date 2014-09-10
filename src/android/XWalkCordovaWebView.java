@@ -376,7 +376,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
         // If app doesn't want to run in background
         if (!keepRunning) {
             // Pause JavaScript timers (including setInterval)
-            this.webview.pauseTimers();
+            this.webview.pauseTimersForReal();
         }
     }
 

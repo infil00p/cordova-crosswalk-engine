@@ -122,4 +122,14 @@ public class XWalkCordovaView extends XWalkView {
 
         return super.dispatchKeyEvent(event);
     }
+
+    @Override
+    public void pauseTimers() {
+        // This is called by XWalkViewInternal.onActivityStateChange().
+        // We don't want them paused by default though.
+    }
+
+    public void pauseTimersForReal() {
+        super.pauseTimers();
+    }
 }
