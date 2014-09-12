@@ -20,11 +20,15 @@ package org.apache.cordova.engine.crosswalk;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.ValueCallback;
 import android.widget.EditText;
 
 import org.apache.cordova.LOG;
+import org.apache.cordova.AndroidChromeClient;
 import org.xwalk.core.XWalkJavascriptResult;
 import org.xwalk.core.XWalkUIClient;
 import org.xwalk.core.XWalkView;
@@ -259,5 +263,16 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
         if (url.equals("about:blank")) {
             appView.getPluginManager().postMessage("exit", null);
         }
+    }
+
+    // File Chooser
+    @Override
+    public void openFileChooser(XWalkView view, ValueCallback<Uri> uploadFile, String acceptType, String capture) {
+        this.appView.mUploadMessage = uploadFile;
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("*/*");
+        this.appView.cordova.getActivity().startActivityForResult(Intent.createChooser(i, "File Browser"),
+                AndroidChromeClient.FILECHOOSER_RESULTCODE);
     }
 }

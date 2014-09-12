@@ -49,6 +49,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient.CustomViewCallback;
 import android.widget.FrameLayout;
 
@@ -78,6 +79,9 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
     // Flag to track that a loadUrl timeout occurred
     int loadUrlTimeout = 0;
+
+    // Callback for file picker dialog
+    protected ValueCallback<Uri> mUploadMessage;
 
     CordovaBridge bridge;
     
@@ -595,7 +599,10 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
     @Override
     public void onFilePickerResult(Uri uri) {
-        // Not needed for x-walk.
+        if (null == mUploadMessage)
+            return;
+        mUploadMessage.onReceiveValue(uri);
+        mUploadMessage = null;
     }
 
     @Override
