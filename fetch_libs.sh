@@ -1,8 +1,6 @@
 ARM_DOWNLOAD="https://download.01.org/crosswalk/releases/crosswalk/android/canary/8.37.189.0/arm/crosswalk-webview-8.37.189.0-arm.zip";
 X86_DOWNLOAD="https://download.01.org/crosswalk/releases/crosswalk/android/canary/8.37.189.0/x86/crosswalk-webview-8.37.189.0-x86.zip";
 
-mkdir -p libs/xwalk_core_library
-
 download() {
     TMPDIR=$(mktemp -d xwdl.XXXXXX)
     pushd $TMPDIR > /dev/null
@@ -19,4 +17,3 @@ download() {
 
 download $ARM_DOWNLOAD
 download $X86_DOWNLOAD
-cp build.gradle.template libs/xwalk_core_library/build.gradle
