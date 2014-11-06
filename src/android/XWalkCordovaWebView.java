@@ -125,7 +125,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
         pluginManager = new PluginManager(this, this.cordova, pluginEntries);
         resourceApi = new CordovaResourceApi(webview.getContext(), pluginManager);
-        bridge = new CordovaBridge(pluginManager, new NativeToJsMessageQueue(this, cordova));
+        bridge = new CordovaBridge(pluginManager, new NativeToJsMessageQueue(this, cordova), this.cordova.getActivity().getPackageName());
         pluginManager.addService("App", "org.apache.cordova.CoreAndroid");
         initWebViewSettings();
 
