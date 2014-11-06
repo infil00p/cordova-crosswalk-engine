@@ -404,6 +404,9 @@ public class XWalkCordovaWebView implements CordovaWebView {
     @Override
     public void handleDestroy()
     {
+        // Cancel pending timeout timer.
+        loadUrlTimeout++;
+
         // Send destroy event to JavaScript
         webview.load("javascript:try{cordova.require('cordova/channel').onDestroy.fire();}catch(e){console.log('exception firing destroy event from native');};", null);
 
