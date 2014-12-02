@@ -2,7 +2,7 @@ ARM_DOWNLOAD="https://download.01.org/crosswalk/releases/crosswalk/android/canar
 X86_DOWNLOAD="https://download.01.org/crosswalk/releases/crosswalk/android/canary/8.37.189.0/x86/crosswalk-webview-8.37.189.0-x86.zip";
 
 download() {
-    TMPDIR=$(mktemp -d xwdl.XXXXXX)
+    TMPDIR=cordova-crosswalk-engine-$$
     pushd $TMPDIR > /dev/null
     echo "Fetching $1..."
     curl -# $1 -o library.zip
