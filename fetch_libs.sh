@@ -3,6 +3,7 @@ X86_DOWNLOAD="https://download.01.org/crosswalk/releases/crosswalk/android/canar
 
 download() {
     TMPDIR=cordova-crosswalk-engine-$$
+    mkdir $TMPDIR
     pushd $TMPDIR > /dev/null
     echo "Fetching $1..."
     curl -# $1 -o library.zip
