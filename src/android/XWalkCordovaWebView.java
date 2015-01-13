@@ -21,6 +21,7 @@ package org.apache.cordova.engine.crosswalk;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.cordova.CordovaBridge;
@@ -68,7 +69,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
     public static final String TAG = "XWalkCordovaWebView";
     public static final String CORDOVA_VERSION = "3.3.0";
 
-    ArrayList<Integer> boundKeyCodes = new ArrayList<Integer>();
+    HashSet<Integer> boundKeyCodes = new HashSet<Integer>();
 
     private PluginManager pluginManager;
     private BroadcastReceiver receiver;
@@ -126,7 +127,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
         pluginManager = new PluginManager(this, this.cordova, pluginEntries);
         resourceApi = new CordovaResourceApi(webview.getContext(), pluginManager);
         bridge = new CordovaBridge(pluginManager, new NativeToJsMessageQueue(this, cordova), this.cordova.getActivity().getPackageName());
-        pluginManager.addService("App", "org.apache.cordova.CoreAndroid");
+        pluginManager.addService("CoreAndroid", "org.apache.cordova.CoreAndroid");
         initWebViewSettings();
 
         webview.init(this);
@@ -349,13 +350,17 @@ public class XWalkCordovaWebView implements CordovaWebView {
     }
 
     @Override
-    public void setButtonPlumbedToJs(int keyCode, boolean value) {
+    public void setButtonPlumbedToJs(int keyCode, boolean override) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
             case KeyEvent.KEYCODE_VOLUME_UP:
             case KeyEvent.KEYCODE_BACK:
                 // TODO: Why are search and menu buttons handled separately?
-                boundKeyCodes.add(keyCode);
+                if (override) {
+                    boundKeyCodes.add(keyCode);
+                } else {
+                    boundKeyCodes.remove(keyCode);
+                }
                 return;
             default:
                 throw new IllegalArgumentException("Unsupported keycode: " + keyCode);
