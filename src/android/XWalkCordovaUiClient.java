@@ -18,17 +18,20 @@
 */
 package org.apache.cordova.engine.crosswalk;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.ValueCallback;
 import android.widget.EditText;
 
+import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.LOG;
-import org.apache.cordova.AndroidChromeClient;
 import org.xwalk.core.XWalkJavascriptResult;
 import org.xwalk.core.XWalkUIClient;
 import org.xwalk.core.XWalkView;
@@ -42,6 +45,8 @@ import org.xwalk.core.XWalkView;
 public class XWalkCordovaUiClient extends XWalkUIClient {
     protected XWalkCordovaWebView appView;
 
+    private static final int FILECHOOSER_RESULTCODE = 5173;
+
     public XWalkCordovaUiClient(XWalkCordovaWebView webView) {
         super(webView.getView());
         this.appView = webView;
@@ -49,8 +54,8 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
 
     @Override
     public boolean onJavascriptModalDialog(XWalkView view, JavascriptMessageType type, String url,
-            String message, String defaultValue, XWalkJavascriptResult result) {
-        switch(type) {
+                                           String message, String defaultValue, XWalkJavascriptResult result) {
+        switch (type) {
             case JAVASCRIPT_ALERT:
                 return onJsAlert(view, url, message, result);
             case JAVASCRIPT_CONFIRM:
@@ -63,7 +68,7 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
             default:
                 break;
         }
-        assert(false);
+        assert (false);
         return false;
     }
 
@@ -76,7 +81,7 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
      * @param result
      */
     private boolean onJsAlert(XWalkView view, String url, String message,
-            final XWalkJavascriptResult result) {
+                              final XWalkJavascriptResult result) {
         AlertDialog.Builder dlg = new AlertDialog.Builder(appView.getView().getContext());
         dlg.setMessage(message);
         dlg.setTitle("Alert");
@@ -97,12 +102,10 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
         dlg.setOnKeyListener(new DialogInterface.OnKeyListener() {
             //DO NOTHING
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK)
-                {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
                     result.confirm();
                     return false;
-                }
-                else
+                } else
                     return true;
             }
         });
@@ -120,7 +123,7 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
      * @param result
      */
     private boolean onJsConfirm(XWalkView view, String url, String message,
-            final XWalkJavascriptResult result) {
+                                final XWalkJavascriptResult result) {
         AlertDialog.Builder dlg = new AlertDialog.Builder(appView.getView().getContext());
         dlg.setMessage(message);
         dlg.setTitle("Confirm");
@@ -146,12 +149,10 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
         dlg.setOnKeyListener(new DialogInterface.OnKeyListener() {
             //DO NOTHING
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK)
-                {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
                     result.cancel();
                     return false;
-                }
-                else
+                } else
                     return true;
             }
         });
@@ -164,12 +165,12 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
      * Tell the client to display a prompt dialog to the user.
      * If the client returns true, WebView will assume that the client will
      * handle the prompt dialog and call the appropriate JsPromptResult method.
-     *
+     * <p/>
      * Since we are hacking prompts for our own purposes, we should not be using them for
      * this purpose, perhaps we should hack console.log to do this instead!
      */
     private boolean onJsPrompt(XWalkView view, String origin, String message, String defaultValue,
-            final XWalkJavascriptResult result) {
+                               final XWalkJavascriptResult result) {
         // Unlike the @JavascriptInterface bridge, this method is always called on the UI thread.
         String handledRet = appView.bridge.promptOnJsPrompt(origin, message, defaultValue);
         if (handledRet != null) {
@@ -208,8 +209,8 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
      * one time for the main frame. This also means that onPageStarted will not be called when the contents of an
      * embedded frame changes, i.e. clicking a link whose target is an iframe.
      *
-     * @param view          The webview initiating the callback.
-     * @param url           The url of the page.
+     * @param view The webview initiating the callback.
+     * @param url  The url of the page.
      */
     @Override
     public void onPageLoadStarted(XWalkView view, String url) {
@@ -227,10 +228,9 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
      * Notify the host application that a page has stopped loading.
      * This method is called only for main frame. When onPageLoadStopped() is called, the rendering picture may not be updated yet.
      *
-     *
-     * @param view          The webview initiating the callback.
-     * @param url           The url of the page.
-     * @param status        The load status of the webview, can be FINISHED, CANCELLED or FAILED.
+     * @param view   The webview initiating the callback.
+     * @param url    The url of the page.
+     * @param status The load status of the webview, can be FINISHED, CANCELLED or FAILED.
      */
     @Override
     public void onPageLoadStopped(XWalkView view, String url, LoadStatus status) {
@@ -267,12 +267,22 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
 
     // File Chooser
     @Override
-    public void openFileChooser(XWalkView view, ValueCallback<Uri> uploadFile, String acceptType, String capture) {
-        this.appView.mUploadMessage = uploadFile;
+    public void openFileChooser(XWalkView view, final ValueCallback<Uri> uploadFile, String acceptType, String capture) {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType("*/*");
-        this.appView.cordova.getActivity().startActivityForResult(Intent.createChooser(i, "File Browser"),
-                AndroidChromeClient.FILECHOOSER_RESULTCODE);
+        i.setType("*/*"); // TODO: wire this to acceptType.
+        Intent intent = Intent.createChooser(i, "File Browser");
+        try {
+            appView.cordova.startActivityForResult(new CordovaPlugin() {
+                @Override
+                public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+                    Uri result = intent == null || resultCode != Activity.RESULT_OK ? null : intent.getData();
+                    uploadFile.onReceiveValue(result);
+                }
+            }, intent, FILECHOOSER_RESULTCODE);
+        } catch (ActivityNotFoundException e) {
+            Log.w("No activity found to handle file chooser intent.", e);
+            uploadFile.onReceiveValue(null);
+        }
     }
 }

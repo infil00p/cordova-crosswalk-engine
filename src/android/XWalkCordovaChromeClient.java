@@ -73,9 +73,6 @@ public class XWalkCordovaChromeClient extends XWalkUIClient implements CordovaCh
     // the video progress view
     private View mVideoProgressView;
     
-    // File Chooser
-    public ValueCallback<Uri> mUploadMessage;
-    
     /**
      * Constructor.
      *
@@ -356,28 +353,6 @@ public class XWalkCordovaChromeClient extends XWalkUIClient implements CordovaCh
 	    }
     return mVideoProgressView; 
     }
-    }
-    
-    public void openFileChooser(ValueCallback<Uri> uploadMsg) {
-        this.openFileChooser(uploadMsg, "*/*");
-    }
-
-    public void openFileChooser( ValueCallback<Uri> uploadMsg, String acceptType ) {
-        this.openFileChooser(uploadMsg, acceptType, null);
-    }
-    
-    public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture)
-    {
-        mUploadMessage = uploadMsg;
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType("*/*");
-        this.cordova.getActivity().startActivityForResult(Intent.createChooser(i, "File Browser"),
-                FILECHOOSER_RESULTCODE);
-    }
-    
-    public ValueCallback<Uri> getValueCallback() {
-        return this.mUploadMessage;
     }
 
     @Override
