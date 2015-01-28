@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-           id="org.apache.cordova.engine.crosswalk"
+           id="org.crosswalk.engine"
       version="0.0.1-dev">
 
     <name>Crosswalk Engine</name>
-    <description>Intel CrossWalk Engine</description>
+    <description>Changes the default WebView to CrossWalk</description>
     <license>Apache 2.0</license>
     <keywords>cordova,chromium,crosswalk,webview</keywords>
-    <repo>https://github.com/infil00p/cordova-crosswalk-engine.git</repo>
+    <repo>https://github.com/MobileChromeApps/cordova-crosswalk-engine.git</repo>
     <issue></issue>
 
     <engines>
       <engine name="cordova-android" version=">=4.0.0-dev" />
     </engines>
 
-    <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
-            <preference name="webView" value="org.apache.cordova.engine.crosswalk.XWalkCordovaWebView" />
+            <preference name="webView" value="org.crosswalk.engine.XWalkCordovaWebView" />
         </config-file>
 
-        <source-file src="src/android/XWalkCordovaWebView.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
-        <source-file src="src/android/XWalkExposedJsApi.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
-        <source-file src="src/android/XWalkCordovaResourceClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
-        <source-file src="src/android/XWalkCordovaUiClient.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
-        <source-file src="src/android/XWalkCordovaView.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
-        <source-file src="src/android/XWalkCordovaCookieManager.java" target-dir="src/org/apache/cordova/engine/crosswalk" />
+        <source-file src="src/android/XWalkCordovaWebView.java" target-dir="src/org/crosswalk/engine" />
+        <source-file src="src/android/XWalkExposedJsApi.java" target-dir="src/org/crosswalk/engine" />
+        <source-file src="src/android/XWalkCordovaResourceClient.java" target-dir="src/org/crosswalk/engine" />
+        <source-file src="src/android/XWalkCordovaUiClient.java" target-dir="src/org/crosswalk/engine" />
+        <source-file src="src/android/XWalkCordovaView.java" target-dir="src/org/crosswalk/engine" />
+        <source-file src="src/android/XWalkCordovaCookieManager.java" target-dir="src/org/crosswalk/engine" />
 
         <framework src="libs/xwalk_core_library/xwalk.gradle" custom="true" type="gradleReference" />
     </platform>

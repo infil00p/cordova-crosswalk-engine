@@ -16,7 +16,7 @@
        specific language governing permissions and limitations
        under the License.
 */
-package org.apache.cordova.engine.crosswalk;
+package org.crosswalk.engine;
 
 import org.apache.cordova.ICordovaCookieManager;
 import org.xwalk.core.internal.XWalkCookieManager;

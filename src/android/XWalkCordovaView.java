@@ -1,4 +1,4 @@
-package org.apache.cordova.engine.crosswalk;
+package org.crosswalk.engine;
 
 import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkUIClient;
