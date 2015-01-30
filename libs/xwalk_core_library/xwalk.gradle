@@ -12,6 +12,6 @@ if (cdvMinSdkVersion == null) {
 }
 
 dependencies {
-  compile 'org.xwalk:xwalk_core_library_beta:9.38.208.4'
+  compile 'org.xwalk:xwalk_core_library_beta:10+'
 }
 
