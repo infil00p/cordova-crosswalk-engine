@@ -133,6 +133,10 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
         webview.init(this);
         exposeJsInterface();
+
+        if (preferences.getBoolean("DisallowOverscroll", false)) {
+            webview.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
