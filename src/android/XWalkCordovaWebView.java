@@ -114,7 +114,7 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
     // Use two-phase init so that the control will work with XML layouts.
     @Override
-    public void init(CordovaInterface cordova, List<PluginEntry> pluginEntries,
+    public void init(final CordovaInterface cordova, List<PluginEntry> pluginEntries,
             Whitelist internalWhitelist, Whitelist externalWhitelist,
             CordovaPreferences preferences) {
         if (this.cordova != null) {
@@ -127,7 +127,21 @@ public class XWalkCordovaWebView implements CordovaWebView {
 
         pluginManager = new PluginManager(this, this.cordova, pluginEntries);
         resourceApi = new CordovaResourceApi(webview.getContext(), pluginManager);
-        bridge = new CordovaBridge(pluginManager, new NativeToJsMessageQueue(this, cordova), this.cordova.getActivity().getPackageName());
+        NativeToJsMessageQueue nativeToJsMessageQueue = new NativeToJsMessageQueue();
+        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.NoOpBridgeMode());
+        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.LoadUrlBridgeMode(this, cordova));
+        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode.OnlineEventsBridgeModeDelegate() {
+            @Override
+            public void setNetworkAvailable(boolean value) {
+                XWalkCordovaWebView.this.setNetworkAvailable(value);
+            }
+
+            @Override
+            public void runOnUiThread(Runnable r) {
+                cordova.getActivity().runOnUiThread(r);
+            }
+        }));
+        bridge = new CordovaBridge(pluginManager, nativeToJsMessageQueue, this.cordova.getActivity().getPackageName());
         pluginManager.addService("CoreAndroid", "org.apache.cordova.CoreAndroid");
         initWebViewSettings();
 
