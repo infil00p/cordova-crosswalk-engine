@@ -43,7 +43,6 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,7 +56,6 @@ import android.widget.FrameLayout;
 
 import org.xwalk.core.XWalkNavigationHistory;
 import org.xwalk.core.XWalkNavigationItem;
-import org.xwalk.core.XWalkPreferences;
 import org.xwalk.core.XWalkView;
 /*
  * This class is our web view.
@@ -159,12 +157,6 @@ public class XWalkCordovaWebView implements CordovaWebView {
         // TODO: The Activity is the one that should call requestFocus().
         if (shouldRequestFocusOnInit()) {
             this.webview.requestFocusFromTouch();
-        }
-        
-        //Determine whether we're in debug or release mode, and turn on Debugging!
-        ApplicationInfo appInfo = webview.getContext().getApplicationContext().getApplicationInfo();
-        if ((appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-            XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
         }
     }
 
@@ -642,14 +634,5 @@ public class XWalkCordovaWebView implements CordovaWebView {
     @Override
     public void loadUrl(String url) {
         loadUrlIntoView(url, true);
-    }
-
-    static {
-        // XWalkPreferencesInternal.ENABLE_JAVASCRIPT
-        XWalkPreferences.setValue("enable-javascript", true);
-        // XWalkPreferencesInternal.JAVASCRIPT_CAN_OPEN_WINDOW
-        XWalkPreferences.setValue("javascript-can-open-window", true);
-        // XWalkPreferencesInternal.ALLOW_UNIVERSAL_ACCESS_FROM_FILE
-        XWalkPreferences.setValue("allow-universal-access-from-file", true);
     }
 }
