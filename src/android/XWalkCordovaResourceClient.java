@@ -226,18 +226,6 @@ public class XWalkCordovaResourceClient extends XWalkResourceClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(XWalkView view, String url) {
-        // Give plugins the chance to handle the url
-        if (parentEngine.pluginManager.onOverrideUrlLoading(url)) {
-            return true;
-        } else if (parentEngine.pluginManager.shouldOpenExternalUrl(url)) {
-            parentEngine.getCordovaWebView().showWebPage(url, true, false, null);
-            return true;
-        } else if (!parentEngine.pluginManager.shouldAllowNavigation(url)) {
-            // This blocks iframe navigations as well.
-            LOG.w(TAG, "Blocked (possibly sub-frame) navigation to non-allowed URL: " + url);
-            return true;
-        }
-
-        return false;
+        return parentEngine.client.onNavigationAttempt(url);
     }
 }
