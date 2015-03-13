@@ -41,7 +41,7 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     public static final String TAG = "XWalkWebViewEngine";
 
-    protected XWalkCordovaView webView;
+    protected final XWalkCordovaView webView;
     protected XWalkCordovaCookieManager cookieManager;
     protected CordovaBridge bridge;
     protected CordovaWebViewEngine.Client client;
