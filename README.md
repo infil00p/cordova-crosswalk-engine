@@ -1,35 +1,73 @@
 
 
-Apache Cordova Crosswalk Engine Proof-of-Concept
+Apache Cordova Crosswalk Engine
 ===
 
-Cordova Crosswalk Engine is a part of a Proof-of-Concept for 
-third party engines to work with Apache Cordova.  This currently only works with the
-4.0.x branch of Apache Cordova found on GitHub, and as of yet, does not work with any
-official Apache Cordova release.  This code should still be considered experimental.
+Cordova Crosswalk Engine is a [Crosswalk WebView](https://crosswalk-project.org/) based engine to work with [Apache Cordova](http://cordova.apache.org/) for Android. This currently works with master branch of [Cordova Android](https://github.com/apache/cordova-android) on GitHub, and it will work with Apache Cordova Android 4.0.0 release.
 
+### Directions:
+#### Android-only:
+* Pull down the Cordova Android
+```
+$ git clone https://github.com/apache/cordova-android.git
+```
+* Generate a project, e.g creating HelloWorld
+```
+$ /path/to/cordova-android/bin/create hello com.example.hello HelloWorld
+```
+* Navigate to the project folder
+```
+$ cd hello
+```
+* Install Crosswalk engine plugin by plugman (version >= 0.22.17)
+```
+$ plugman install --platform android --plugin https://github.com/MobileChromeApps/cordova-crosswalk-engine.git --project .
+```
+* Build
+```
+$ ./cordova/build
+```
+The build script will automatically fetch the Crosswalk WebView libraries from Crosswalk project download site (https://download.01.org/crosswalk/releases/crosswalk/android/) and build for both X86 and ARM architectures. 
 
-Directions (We're still trying to automate more of this, sorry):
+For example, building HelloWorld generates:
 
-Android-only:
+```
+/path/to/hello/build/outputs/apk/hello-x86-debug.apk
+/path/to/hello/build/outputs/apk/hello-armv7-debug.apk
+```
 
-1. Pull down the `4.0.x` branch of [Apache Cordova](https://github.com/apache/cordova-android) found here (https://github.com/apache/cordova-android/tree/4.0.x)
-2. Clone this repository.
-3. Run `sh fetch_libs.sh` to download the Crosswalk library
-4. Generate a project with `./bin/create`
-5. Run Plugman: `plugman install --platform android --plugin <path_to_crosswalk_engine>/cordova-crosswalk-engine/ --project .`
-6. Add the `libs/xwalk_core_library` as a dependency in `project.properties`. (Note: Relative Paths work for libraries, not absolute paths.  Manually edit if necessary.)
+#### Cordova CLI:
+(It will be updated after cordova-android 4.0.0 release with CLI)
 
-Cordova CLI:
+* Install the latest version of the Cordova CLI from npm (version >= 4.2.0)
+```
+$ npm install -g cordova
+```
+* Create a project with cordova create, e.g creating HelloWorld
+```
+$ cordova create hello com.example.hello HelloWorld
+```
+* Navigate to the project folder
+```
+$ cd hello
+```
+* Add the Android platform @4.0.0-dev
+```
+$ cordova platform add https://github.com/apache/cordova-android.git
+```
+* Add the Crosswalk engine plugin
+```
+$ cordova plugin add  https://github.com/MobileChromeApps/cordova-crosswalk-engine.git
+```
+* Build
+```
+$ cordova build android
+```
+The build script will automatically fetch the Crosswalk WebView libraries from Crosswalk project download site (https://download.01.org/crosswalk/releases/crosswalk/android/) and build for both X86 and ARM architectures.
 
-1. Install the latest version of the Cordova CLI from npm (Requires at least 3.5.0-0.2.6)
-2. Pull down the `4.0.x` branch of [Apache Cordova](https://github.com/apache/cordova-android) found here (https://github.com/apache/cordova-android/tree/4.0.x)
-3. Clone this repository.
-4. Run `sh fetch_libs.sh` to download the Crosswalk library
-5. Create a project with `cordova create`
-6. Add the Android platform with `cordova platform add <path to cordova-android>`
-7. Add the Crosswalk Engine plugin with `cordova plugin add <path to crosswalk-engine-plugin>`
+For example, building android with Crosswalk generates:
 
-Requirements:
-
-`fetch_libs.sh` requires `curl` and `unzip` to be installed, and on the current `PATH`.
+```
+/path/to/hello/platforms/android/build/outputs/apk/hello-x86-debug.apk
+/path/to/hello/platforms/android/build/outputs/apk/hello-armv7-debug.apk
+```
