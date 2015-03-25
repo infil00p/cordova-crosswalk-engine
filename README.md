@@ -71,3 +71,13 @@ For example, building android with Crosswalk generates:
 /path/to/hello/platforms/android/build/outputs/apk/hello-x86-debug.apk
 /path/to/hello/platforms/android/build/outputs/apk/hello-armv7-debug.apk
 ```
+
+Note that it is also possible to publish a multi-APK application on the Play Store that uses Crosswalk for Pre-L devices, and the (updatable) system webview for L+:
+
+To build Crosswalk-enabled apks, add this plugin and run:
+
+    $ cordova build --release
+
+To build System-webview apk, remove this plugin and run:
+
+    $ cordova build --release -- --android-minSdkVersion=21
