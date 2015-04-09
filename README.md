@@ -1,64 +1,19 @@
-
-
 Apache Cordova Crosswalk Engine
 ===
 
-Cordova Crosswalk Engine is a [Crosswalk WebView](https://crosswalk-project.org/) based engine to work with [Apache Cordova](http://cordova.apache.org/) for Android. This currently works with master branch of [Cordova Android](https://github.com/apache/cordova-android) on GitHub, and it will work with Apache Cordova Android 4.0.0 release.
+Cordova Crosswalk Engine is a [Crosswalk WebView](https://crosswalk-project.org/) based engine to work with [Apache Cordova](http://cordova.apache.org/) for Android. This requires [Cordova Android](https://github.com/apache/cordova-android) 4.0.0+.
 
-### Directions:
-#### Android-only:
-* Pull down the Cordova Android
-```
-$ git clone https://github.com/apache/cordova-android.git
-```
-* Generate a project, e.g creating HelloWorld
-```
-$ /path/to/cordova-android/bin/create hello com.example.hello HelloWorld
-```
-* Navigate to the project folder
-```
-$ cd hello
-```
-* Install Crosswalk engine plugin by plugman (version >= 0.22.17)
-```
-$ plugman install --platform android --plugin https://github.com/MobileChromeApps/cordova-crosswalk-engine.git --project .
-```
-* Build
-```
-$ ./cordova/build
-```
-The build script will automatically fetch the Crosswalk WebView libraries from Crosswalk project download site (https://download.01.org/crosswalk/releases/crosswalk/android/) and build for both X86 and ARM architectures. 
+### Install
 
-For example, building HelloWorld generates:
+The following directions are for cordova-cli (most people).  Alternatively you can use the [Android platform scripts workflow](PlatformScriptsWorkflow.md).
+
+* Open an existing cordova project, with cordova-android 4.0.0+, and using the latest CLI.
+* Add this plugin
 
 ```
-/path/to/hello/build/outputs/apk/hello-x86-debug.apk
-/path/to/hello/build/outputs/apk/hello-armv7-debug.apk
+$ cordova plugin add cordova-crosswalk-engine
 ```
 
-#### Cordova CLI:
-(It will be updated after cordova-android 4.0.0 release with CLI)
-
-* Install the latest version of the Cordova CLI from npm (version >= 4.2.0)
-```
-$ npm install -g cordova
-```
-* Create a project with cordova create, e.g creating HelloWorld
-```
-$ cordova create hello com.example.hello HelloWorld
-```
-* Navigate to the project folder
-```
-$ cd hello
-```
-* Add the Android platform @4.0.0-dev
-```
-$ cordova platform add https://github.com/apache/cordova-android.git
-```
-* Add the Crosswalk engine plugin
-```
-$ cordova plugin add  https://github.com/MobileChromeApps/cordova-crosswalk-engine.git
-```
 * Build
 ```
 $ cordova build android
