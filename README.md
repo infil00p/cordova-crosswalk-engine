@@ -11,7 +11,7 @@ The following directions are for cordova-cli (most people).  Alternatively you c
 * Add this plugin
 
 ```
-$ cordova plugin add cordova-crosswalk-engine
+$ cordova plugin add cordova-plugin-crosswalk-webview
 ```
 
 * Build
