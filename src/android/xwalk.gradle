@@ -17,7 +17,7 @@
        under the License.
 */
 
-def DEFAULT_VERSION = "org.xwalk:xwalk_core_library_beta:11+"
+def DEFAULT_VERSION = "org.xwalk:xwalk_core_library_beta:13+"
 
 repositories {
   maven {
