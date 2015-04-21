@@ -47,3 +47,12 @@ You can try out a different Crosswalk version using a `<preference>` tag within 
     <preference name="xwalkVersion" value="13+" />
     <preference name="xwalkVersion" value="13" />
 
+### Release Notes
+
+#### 1.1.0 (April 21, 2015)
+* Based on Crosswalk v13
+* Made Crosswalk version configurable via `<preference name="xwalkVersion" value="..." />`
+
+#### 1.0.0 (Mar 25, 2015)
+* Initial release
+* Based on Crosswalk v11
