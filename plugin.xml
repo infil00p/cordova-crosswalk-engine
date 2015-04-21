@@ -28,6 +28,6 @@
         <source-file src="src/android/XWalkCordovaView.java" target-dir="src/org/crosswalk/engine" />
         <source-file src="src/android/XWalkCordovaCookieManager.java" target-dir="src/org/crosswalk/engine" />
 
-        <framework src="libs/xwalk_core_library/xwalk.gradle" custom="true" type="gradleReference" />
+        <framework src="src/android/xwalk.gradle" custom="true" type="gradleReference" />
     </platform>
 </plugin>

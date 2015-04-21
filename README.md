@@ -1,7 +1,7 @@
-Apache Cordova Crosswalk Engine
-===
+# cordova-plugin-crosswalk-webview
 
-Cordova Crosswalk Engine is a [Crosswalk WebView](https://crosswalk-project.org/) based engine to work with [Apache Cordova](http://cordova.apache.org/) for Android. This requires [Cordova Android](https://github.com/apache/cordova-android) 4.0.0+.
+Makes your Cordova application use the [Crosswalk WebView](https://crosswalk-project.org/)
+instead of the System WebView. Requires cordova-android 4.0 or greater.
 
 ### Install
 
@@ -18,7 +18,7 @@ $ cordova plugin add cordova-plugin-crosswalk-webview
 ```
 $ cordova build android
 ```
-The build script will automatically fetch the Crosswalk WebView libraries from Crosswalk project download site (https://download.01.org/crosswalk/releases/crosswalk/android/) and build for both X86 and ARM architectures.
+The build script will automatically fetch the Crosswalk WebView libraries from Crosswalk project download site (https://download.01.org/crosswalk/releases/crosswalk/android/maven2/) and build for both X86 and ARM architectures.
 
 For example, building android with Crosswalk generates:
 
@@ -36,3 +36,14 @@ To build Crosswalk-enabled apks, add this plugin and run:
 To build System-webview apk, remove this plugin and run:
 
     $ cordova build --release -- --android-minSdkVersion=21
+
+### Configure
+
+You can try out a different Crosswalk version using a `<preference>` tag within your `config.xml`. Some examples:
+
+    <!-- These are all equivalent -->
+    <preference name="xwalkVersion" value="org.xwalk:xwalk_core_library_beta:13+" />
+    <preference name="xwalkVersion" value="xwalk_core_library_beta:13+" />
+    <preference name="xwalkVersion" value="13+" />
+    <preference name="xwalkVersion" value="13" />
+

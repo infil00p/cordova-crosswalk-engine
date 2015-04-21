@@ -1,0 +1,66 @@
+/*
+       Licensed to the Apache Software Foundation (ASF) under one
+       or more contributor license agreements.  See the NOTICE file
+       distributed with this work for additional information
+       regarding copyright ownership.  The ASF licenses this file
+       to you under the Apache License, Version 2.0 (the
+       "License"); you may not use this file except in compliance
+       with the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing,
+       software distributed under the License is distributed on an
+       "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+       KIND, either express or implied.  See the License for the
+       specific language governing permissions and limitations
+       under the License.
+*/
+
+def DEFAULT_VERSION = "org.xwalk:xwalk_core_library_beta:11+"
+
+repositories {
+  maven {
+    url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2'
+  }
+}
+
+if (cdvBuildMultipleApks == null) {
+    ext.cdvBuildMultipleApks = true
+}
+if (cdvMinSdkVersion == null) {
+    ext.cdvMinSdkVersion = 14
+}
+
+def findXwalkPref() {
+  def xml = file("res/xml/config.xml").getText()
+  def root = new XmlParser(false, false).parseText(xml)
+
+  def ret;
+  root.preference.each { it ->
+    if (it.attribute("name").toLowerCase() == "xwalkversion") {
+      ret = it.attribute("value")
+    }
+  }
+  return ret;
+}
+
+if (!project.hasProperty('xwalkVersion')) {
+    ext.xwalkVersion = findXwalkPref();
+}
+
+if (!xwalkVersion) {
+    ext.xwalkVersion = DEFAULT_VERSION
+} else if ((xwalkVersion =~ /:/).count == 1) {
+    ext.xwalkVersion = "org.xwalk:${xwalkVersion}"
+} else if ((xwalkVersion =~ /:/).count == 0) {
+    if (xwalkVersion ==~ /\d+/) {
+        ext.xwalkVersion = "${xwalkVersion}+"
+    }
+    ext.xwalkVersion = "org.xwalk:xwalk_core_library_beta:${xwalkVersion}"
+}
+
+dependencies {
+    compile xwalkVersion
+}
+
