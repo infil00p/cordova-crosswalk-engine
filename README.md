@@ -54,6 +54,10 @@ You can set [command-line flags](http://peter.sh/experiments/chromium-command-li
 
 ### Release Notes
 
+#### 1.2.0 (April 22, 2015)
+* Made Crosswalk command-line configurable via `<preference name="xwalkCommandLine" value="..." />`
+* Disabled pull-down-to-refresh by default
+
 #### 1.1.0 (April 21, 2015)
 * Based on Crosswalk v13
 * Made Crosswalk version configurable via `<preference name="xwalkVersion" value="..." />`
