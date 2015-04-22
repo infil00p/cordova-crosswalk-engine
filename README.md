@@ -47,6 +47,11 @@ You can try out a different Crosswalk version using a `<preference>` tag within 
     <preference name="xwalkVersion" value="13+" />
     <preference name="xwalkVersion" value="13" />
 
+You can set [command-line flags](http://peter.sh/experiments/chromium-command-line-switches/) as well:
+
+    <!-- This is the default -->
+    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+
 ### Release Notes
 
 #### 1.1.0 (April 21, 2015)

@@ -18,6 +18,7 @@
 */
 
 def DEFAULT_VERSION = "org.xwalk:xwalk_core_library_beta:13+"
+def DEFAULT_COMMAND_LINE = "--disable-pull-to-refresh-effect"
 
 repositories {
   maven {
@@ -32,35 +33,61 @@ if (cdvMinSdkVersion == null) {
     ext.cdvMinSdkVersion = 14
 }
 
-def findXwalkPref() {
-  def xml = file("res/xml/config.xml").getText()
-  def root = new XmlParser(false, false).parseText(xml)
+def getConfigPreference(name, defaultValue) {
+    name = name.toLowerCase()
+    def xml = file("res/xml/config.xml").getText()
+    // Disable namespace awareness since Cordova doesn't use them properly
+    def root = new XmlParser(false, false).parseText(xml)
 
-  def ret;
-  root.preference.each { it ->
-    if (it.attribute("name").toLowerCase() == "xwalkversion") {
-      ret = it.attribute("value")
+    def ret = defaultValue
+    root.preference.each { it ->
+        def attrName = it.attribute("name")
+        if (attrName && attrName.toLowerCase() == name) {
+            ret = it.attribute("value")
+        }
     }
-  }
-  return ret;
+    return ret
 }
 
+// Set defaults before project's build-extras.gradle
 if (!project.hasProperty('xwalkVersion')) {
-    ext.xwalkVersion = findXwalkPref();
+    ext.xwalkVersion = getConfigPreference("xwalkversion", DEFAULT_VERSION)
+}
+if (!project.hasProperty('xwalkCommandLine')) {
+    ext.xwalkCommandLine = getConfigPreference("xwalkcommandline", DEFAULT_COMMAND_LINE)
 }
 
-if (!xwalkVersion) {
-    ext.xwalkVersion = DEFAULT_VERSION
-} else if ((xwalkVersion =~ /:/).count == 1) {
-    ext.xwalkVersion = "org.xwalk:${xwalkVersion}"
-} else if ((xwalkVersion =~ /:/).count == 0) {
-    if (xwalkVersion ==~ /\d+/) {
-        ext.xwalkVersion = "${xwalkVersion}+"
+// Apply values after project's build-extras.gradle
+cdvPluginPostBuildExtras.add({
+
+    def xwalkSpec = xwalkVersion
+    if ((xwalkSpec =~ /:/).count == 1) {
+        xwalkSpec = "org.xwalk:${xwalkSpec}"
+    } else if ((xwalkSpec =~ /:/).count == 0) {
+        if (xwalkSpec ==~ /\d+/) {
+            xwalkSpec = "${xwalkSpec}+"
+        }
+        xwalkSpec = "org.xwalk:xwalk_core_library_beta:${xwalkSpec}"
     }
-    ext.xwalkVersion = "org.xwalk:xwalk_core_library_beta:${xwalkVersion}"
-}
 
-dependencies {
-    compile xwalkVersion
-}
+    dependencies {
+        compile xwalkSpec
+    }
 
+    if (file('assets/xwalk-command-line').exists()) {
+        println('Not writing assets/xwalk-command-line since file already exists.')
+        return
+    }
+    android.applicationVariants.all { variant ->
+        def variantName = variant.name.capitalize()
+        def mergeTask = tasks["merge${variantName}Assets"]
+        def processTask = tasks["process${variantName}Resources"]
+        def outFile = new File (mergeTask.outputDir, "xwalk-command-line")
+        def newTask = project.task("createXwalkCommandLineFile${variantName}") << {
+            mergeTask.outputDir.mkdirs()
+            outFile.write("xwalk ${xwalkCommandLine}\n")
+        }
+        newTask.dependsOn(mergeTask)
+        processTask.dependsOn(newTask)
+    }
+})
