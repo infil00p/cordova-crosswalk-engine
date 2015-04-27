@@ -3,22 +3,21 @@
 Makes your Cordova application use the [Crosswalk WebView](https://crosswalk-project.org/)
 instead of the System WebView. Requires cordova-android 4.0 or greater.
 
-## Benefits
+### Benefits
 
-Capabilities: such as WebRTC, WebAudio, and Accelerated 2D Canvas
-Performance improvements
-Consistent user experience and reduced testing effort across Android devices
+* WebView doesn't change depending on Android version
+* Capabilities: such as WebRTC, WebAudio, Web Components
+* Performance improvements (compared to older system webviews)
 
-## Drawbacks
 
-Increased memory footprint
-An overhead of ~30MB (as reported by the RSS column of ps)
-Unlike the system WebVew, Crosswalk resources are not shareable between applications
-Increased APK size (about 17MB)
-Increased size on disk when installed (about 50MB)
-Crosswalk Webview does not auto-update
-You have to manually upgrade and re-publish your app to take advantage of any Crosswalk performance improvements
+### Drawbacks
 
+* Increased memory footprint
+  * An overhead of ~30MB (as reported by the RSS column of ps)
+* Increased APK size (about 17MB)
+* Increased size on disk when installed (about 50MB)
+* Crosswalk WebView stores data (IndexedDB, LocalStorage, etc) separately from System WebView
+  * You'll need to manually migrate local data when switching between the two
 
 ### Install
 
