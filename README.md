@@ -51,7 +51,7 @@ To build Crosswalk-enabled apks, add this plugin and run:
 
 To build System-webview apk, remove this plugin and run:
 
-    $ cordova build --release -- --android-minSdkVersion=21
+    $ cordova build --release -- --minSdkVersion=21
 
 ### Configure
 
