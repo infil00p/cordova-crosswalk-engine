@@ -82,7 +82,7 @@ module.exports = function(context) {
      * @returns {Object|undefined} -  Array-like object (preference:value)
      */
     var cliPreferences = function() {
-        console.log("go")
+
         var commandlineVariablesList = nopt({ 'variable': Array }, {}, argumentsString.split(' '))['variable'],
             commandlineVariables = {};
 
@@ -90,7 +90,6 @@ module.exports = function(context) {
             commandlineVariables[element.split('=')[0].toUpperCase()] = element.split('=')[1];
         });
 
-         console.log(commandlineVariablesList)
         return commandlineVariables;
     };
 
@@ -99,8 +98,7 @@ module.exports = function(context) {
     // Set default values for any undefined properties
     var main = function() {
         // Establish list of valid preference names. Remove superfluous ones.
-        console.log(Object.keys(cliPreferences()))
-        console.log(Object.keys(defaultPreferences()))
+
         var validPrefsList = _.intersection(Object.keys(cliPreferences()), Object.keys(defaultPreferences())),
             defaultPrefsFiltered = _.pick(defaultPreferences(), validPrefsList),
             cliPrefsFiltered = _.pick(cliPreferences(), validPrefsList);
