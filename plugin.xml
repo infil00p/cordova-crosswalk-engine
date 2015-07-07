@@ -16,9 +16,20 @@
         <engine name="cordova-plugman" version=">=4.2.0"/><!-- needed for gradleReference support -->
     </engines>
 
+    <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
-            <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
+            <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine"/>
+
+            <!-- Crosswalk Version -->
+            <!-- Example: '10', '15+', 'xwalk_core_library_beta:9+', 'org.xwalk:xwalk_core_library_beta:18+' -->
+            <!-- Reference: https://crosswalk-project.org/documentation/downloads.html -->
+            <preference name="CROSSWALK_ANDROID_VERSION" default="13+"/>
+
+            <!-- Crosswalk Arguments-->
+            <!-- Default: '––disable-pull-to-refresh-effect' -->
+            <!-- Reference: https://github.com/crosswalk-project/crosswalk-website/wiki/Crosswalk-Command-Line-Options -->
+            <preference name="CROSSWALK_ANDROID_COMMANDLINE" default="––disable-pull-to-refresh-effect"/>
         </config-file>
 
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkWebViewEngine.java" target-dir="src/org/crosswalk/engine"/>
