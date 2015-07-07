@@ -41,5 +41,6 @@
 
         <framework src="platforms/android/xwalk.gradle" custom="true" type="gradleReference"/>
 
+        <hook type="after_plugin_install" src="hooks/after_plugin_install/000-apply_cli_options.js"/>
     </platform>
 </plugin>
