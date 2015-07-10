@@ -91,4 +91,9 @@ public class XWalkCordovaResourceClient extends XWalkResourceClient {
     public boolean shouldOverrideUrlLoading(XWalkView view, String url) {
         return parentEngine.client.onNavigationAttempt(url);
     }
+
+    @Override
+    public void onReceivedSslError(XWalkView view, ValueCallback<Boolean> callback, SslError error) {
+        callback.onReceiveValue(false);
+    }
 }
