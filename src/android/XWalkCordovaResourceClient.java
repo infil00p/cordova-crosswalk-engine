@@ -19,6 +19,8 @@
 package org.crosswalk.engine;
 
 import android.net.Uri;
+import android.net.http.SslError;
+import android.webkit.ValueCallback;
 import android.webkit.WebResourceResponse;
 
 import org.apache.cordova.CordovaResourceApi;
