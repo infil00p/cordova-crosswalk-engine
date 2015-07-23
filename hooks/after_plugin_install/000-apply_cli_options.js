@@ -67,8 +67,9 @@ module.exports = function(context) {
         // Parses <preference> tags within <config-file>-blocks
         tagsList.map(function(prefTag) {
             prefTag.getchildren().forEach(function(element) {
-                if ((element.tag == 'preference') && (element.attrib['name'])) {
-                    pluginPreferences[element.attrib['name']] = element.attrib['default'] || null;
+                if ((element.tag == 'preference') && (element.attrib['name']) && 
+                        element.attrib['default']) {
+                    pluginPreferences[element.attrib['name']] = element.attrib['default'];
                 }
             });
         });
@@ -86,9 +87,11 @@ module.exports = function(context) {
         var commandlineVariablesList = nopt({ 'variable': Array }, {}, argumentsString.split(' '))['variable'],
             commandlineVariables = {};
 
-        commandlineVariablesList.forEach(function(element) {
-            commandlineVariables[element.split('=')[0].toUpperCase()] = element.split('=')[1];
-        });
+        if (commandlineVariablesList) {
+            commandlineVariablesList.forEach(function(element) {
+                commandlineVariables[element.split('=')[0].toUpperCase()] = element.split('=')[1];
+            });
+        }
 
         return commandlineVariables;
     };
@@ -103,8 +106,9 @@ module.exports = function(context) {
             defaultPrefsFiltered = _.pick(defaultPreferences(), validPrefsList),
             cliPrefsFiltered = _.pick(cliPreferences(), validPrefsList);
 
+
         // Establish final preferences object by providing defaults from plugin.xml
-        var resolvedPrefs = _.defaults(cliPrefsFiltered, defaultPrefsFiltered),
+        var resolvedPrefs = _.defaults(cliPrefsFiltered, defaultPreferences()),
             resolvedPrefsList = Object.keys(resolvedPrefs);
 
         // Loop through all resolved preferences
