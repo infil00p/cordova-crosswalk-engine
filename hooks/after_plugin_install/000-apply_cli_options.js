@@ -35,12 +35,15 @@ module.exports = function(context) {
         XmlHelpers = context.requireCordovaModule("cordova-lib/src/util/xml-helpers"),
         CordovaCli = path.dirname(path.dirname(process.mainModule.filename)),
         nopt = require(path.join(CordovaCli, 'node_modules', 'nopt')),
-        _ = require(path.join(CordovaCli, 'node_modules', 'underscore'));
+        _ = require(path.join(CordovaCli, 'node_modules', 'underscore')),
+        et = context.requireCordovaModule('elementtree');
 
     /** @defaults */
     var argumentsString = context.cmdLine,
         pluginConfigurationFile = path.join(context.opts.plugin.dir, 'plugin.xml'),
-        projectConfigurationFile = path.join(context.opts.projectRoot, 'config.xml');
+        projectConfigurationFile = path.join(context.opts.projectRoot, 'config.xml'),
+        projectManifestFile = path.join(context.opts.projectRoot,
+            "platforms", "android", 'AndroidManifest.xml');
 
     /** Init */
     var CordovaConfig = new ConfigParser(projectConfigurationFile);
@@ -96,6 +99,14 @@ module.exports = function(context) {
         return commandlineVariables;
     };
 
+    var addPermission = function() {
+        if (_.property('LIB_MODE')(cliPreferences()) == 'shared') {
+            var projectManifestXmlRoot = XmlHelpers.parseElementtreeSync(projectManifestFile);
+            var child = et.XML('<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />');
+            XmlHelpers.graftXML(projectManifestXmlRoot, [child], '/manifest');
+            fs.writeFileSync(projectManifestFile, projectManifestXmlRoot.write({indent: 4}), 'utf-8');
+        }
+    }
 
     /** Main method */
     // Set default values for any undefined properties
@@ -123,6 +134,9 @@ module.exports = function(context) {
 
         // Write config.xml
         CordovaConfig.write();
+
+        // Add the permission of write_external_storage in shared mode
+        addPermission();
 
         deferral.resolve();
     };
