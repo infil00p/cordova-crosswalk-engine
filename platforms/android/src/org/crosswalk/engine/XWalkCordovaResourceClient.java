@@ -18,7 +18,11 @@
 */
 package org.crosswalk.engine;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.net.http.SslError;
+import android.webkit.ValueCallback;
 import android.webkit.WebResourceResponse;
 
 import org.apache.cordova.CordovaResourceApi;
@@ -90,5 +94,34 @@ public class XWalkCordovaResourceClient extends XWalkResourceClient {
     @Override
     public boolean shouldOverrideUrlLoading(XWalkView view, String url) {
         return parentEngine.client.onNavigationAttempt(url);
+    }
+
+
+    /**
+    * Notify the host application that an SSL error occurred while loading a
+    * resource. The host application must call either callback.onReceiveValue(true)
+    * or callback.onReceiveValue(false). Note that the decision may be
+    * retained for use in response to future SSL errors. The default behavior
+    * is to pop up a dialog.
+    */
+    @Override
+    public void onReceivedSslError(XWalkView view, ValueCallback<Boolean> callback, SslError error) {
+        final String packageName = parentEngine.cordova.getActivity().getPackageName();
+        final PackageManager pm = parentEngine.cordova.getActivity().getPackageManager();
+
+        ApplicationInfo appInfo;
+        try {
+            appInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            if ((appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+                // debug = true
+                callback.onReceiveValue(true);
+            } else {
+                // debug = false
+                callback.onReceiveValue(false);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            // When it doubt, lock it out!
+            callback.onReceiveValue(false);
+        }
     }
 }
