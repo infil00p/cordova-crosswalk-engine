@@ -58,15 +58,15 @@ To build System-webview apk, remove this plugin and run:
 You can try out a different Crosswalk version using a `<preference>` tag within your `config.xml`. Some examples:
 
     <!-- These are all equivalent -->
-    <preference name="xwalkVersion" value="org.xwalk:xwalk_core_library_beta:13+" />
-    <preference name="xwalkVersion" value="xwalk_core_library_beta:13+" />
-    <preference name="xwalkVersion" value="13+" />
-    <preference name="xwalkVersion" value="13" />
+    <preference name="CROSSWALK_ANDROID_VERSION" value="org.xwalk:xwalk_core_library_beta:13+" />
+    <preference name="CROSSWALK_ANDROID_VERSION" value="xwalk_core_library_beta:13+" />
+    <preference name="CROSSWALK_ANDROID_VERSION" value="13+" />
+    <preference name="CROSSWALK_ANDROID_VERSION" value="13" />
 
 You can set [command-line flags](http://peter.sh/experiments/chromium-command-line-switches/) as well:
 
     <!-- This is the default -->
-    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+    <preference name="CROSSWALK_ANDROID_COMMANDLINE" value="--disable-pull-to-refresh-effect" />
 
 ### Release Notes
 

@@ -18,7 +18,7 @@
 */
 
 def DEFAULT_VERSION = "org.xwalk:xwalk_core_library_beta:13+"
-def DEFAULT_COMMAND_LINE = "--disable-pull-to-refresh-effect"
+def DEFAULT_COMMANDLINE = "--disable-pull-to-refresh-effect"
 
 repositories {
   maven {
@@ -51,10 +51,10 @@ def getConfigPreference(name, defaultValue) {
 
 // Set defaults before project's build-extras.gradle
 if (!project.hasProperty('xwalkVersion')) {
-    ext.xwalkVersion = getConfigPreference("xwalkversion", DEFAULT_VERSION)
+    ext.xwalkVersion = getConfigPreference("CROSSWALK_ANDROID_VERSION", DEFAULT_VERSION)
 }
 if (!project.hasProperty('xwalkCommandLine')) {
-    ext.xwalkCommandLine = getConfigPreference("xwalkcommandline", DEFAULT_COMMAND_LINE)
+    ext.xwalkCommandLine = getConfigPreference("CROSSWALK_ANDROID_COMMANDLINE", DEFAULT_COMMANDLINE)
 }
 
 // Apply values after project's build-extras.gradle

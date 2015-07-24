@@ -33,10 +33,8 @@ public class XWalkCordovaView extends XWalkView implements CordovaWebViewEngine.
             }
             boolean prefAnimatable = preferences == null ? false : preferences.getBoolean("CrosswalkAnimatable", false);
             boolean manifestAnimatable = ai.metaData == null ? false : ai.metaData.getBoolean("CrosswalkAnimatable");
-            if (prefAnimatable || manifestAnimatable) {
-                // Slows it down a bit, but allows for it to be animated by Android View properties.
-                XWalkPreferences.setValue(XWalkPreferences.ANIMATABLE_XWALK_VIEW, true);
-            }
+            // Selects between a TextureView (obeys framework transforms applied to view) or a SurfaceView (better performance).
+            XWalkPreferences.setValue(XWalkPreferences.ANIMATABLE_XWALK_VIEW, prefAnimatable || manifestAnimatable);
             if ((ai.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
                 XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
             }
