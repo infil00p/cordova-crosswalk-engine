@@ -39,7 +39,7 @@ module.exports = function(context) {
         et = context.requireCordovaModule('elementtree');
 
     /** @defaults */
-    var argumentsString = context.cmdLine,
+    var argumentsString = process.argv,//context.cmdLine,
         pluginConfigurationFile = path.join(context.opts.plugin.dir, 'plugin.xml'),
         projectConfigurationFile = path.join(context.opts.projectRoot, 'config.xml'),
         projectManifestFile = path.join(context.opts.projectRoot,
@@ -87,9 +87,8 @@ module.exports = function(context) {
      */
     var cliPreferences = function() {
 
-        var commandlineVariablesList = nopt({ 'variable': Array }, {}, argumentsString.split(' '))['variable'],
+        var commandlineVariablesList = nopt({ 'variable': Array }, {}, argumentsString)['variable'],
             commandlineVariables = {};
-
         if (commandlineVariablesList) {
             commandlineVariablesList.forEach(function(element) {
                 commandlineVariables[element.split('=')[0].toUpperCase()] = element.split('=')[1];
@@ -112,11 +111,9 @@ module.exports = function(context) {
     // Set default values for any undefined properties
     var main = function() {
         // Establish list of valid preference names. Remove superfluous ones.
-
         var validPrefsList = _.intersection(Object.keys(cliPreferences()), Object.keys(defaultPreferences())),
             defaultPrefsFiltered = _.pick(defaultPreferences(), validPrefsList),
             cliPrefsFiltered = _.pick(cliPreferences(), validPrefsList);
-
 
         // Establish final preferences object by providing defaults from plugin.xml
         var resolvedPrefs = _.defaults(cliPrefsFiltered, defaultPreferences()),

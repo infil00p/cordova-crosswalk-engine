@@ -29,7 +29,7 @@
             <!-- Crosswalk Arguments-->
             <!-- Default: '––disable-pull-to-refresh-effect' -->
             <!-- Reference: https://github.com/crosswalk-project/crosswalk-website/wiki/Crosswalk-Command-Line-Options -->
-            <preference name="CROSSWALK_ANDROID_COMMANDLINE" default="––disable-pull-to-refresh-effect"/>
+            <preference name="CROSSWALK_ANDROID_COMMANDLINE" default="--disable-pull-to-refresh-effect"/>
 
             <preference name="LIB_MODE" default="embedded" />
         </config-file>
