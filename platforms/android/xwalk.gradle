@@ -29,13 +29,6 @@ repositories {
   }
 }
 
-if (cdvBuildMultipleApks == null) {
-    ext.cdvBuildMultipleApks = true
-}
-if (cdvMinSdkVersion == null) {
-    ext.cdvMinSdkVersion = 14
-}
-
 def getConfigPreference(name) {
     name = name.toLowerCase()
     def xml = file("res/xml/config.xml").getText()
@@ -54,6 +47,14 @@ def getConfigPreference(name) {
         }
     }
     return ret ? ret : defaultValue
+}
+
+if (cdvBuildMultipleApks == null) {
+    ext.cdvBuildMultipleApks = getConfigPreference("xwalkMultipleApk").toBoolean();
+}
+if (cdvMinSdkVersion == null) {
+    def minSdk = getConfigPreference("android-minSdkVersion");
+    ext.cdvMinSdkVersion =  minSdk && minSdk.toInteger() > 14 ? minSdk : 14;
 }
 
 if (!project.hasProperty('xwalkMode')) {
