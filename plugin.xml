@@ -34,6 +34,11 @@
             <preference name="LIB_MODE" default="embedded" />
         </config-file>
 
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+        </config-file>
+
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkWebViewEngine.java" target-dir="src/org/crosswalk/engine"/>
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkExposedJsApi.java" target-dir="src/org/crosswalk/engine"/>
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaResourceClient.java" target-dir="src/org/crosswalk/engine"/>
