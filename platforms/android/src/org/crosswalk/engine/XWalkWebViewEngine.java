@@ -97,16 +97,10 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
         this.pluginManager = pluginManager;
         this.nativeToJsMessageQueue = nativeToJsMessageQueue;
 
-        CordovaPlugin initPlugin = new CordovaPlugin() {
-            @Override
-            public void onResume(boolean multitasking) {
-                activityDelegate.onResume();
-            }
-        };
-        pluginManager.addService(new PluginEntry("XWalkInit", initPlugin));
         webView.init(this);
 
-        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode.OnlineEventsBridgeModeDelegate() {
+        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode(
+                new NativeToJsMessageQueue.OnlineEventsBridgeMode.OnlineEventsBridgeModeDelegate() {
             @Override
             public void setNetworkAvailable(boolean value) {
                 webView.setNetworkAvailable(value);
@@ -201,6 +195,14 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
     public void loadUrl(String url, boolean clearNavigationStack) {
         if (!activityDelegate.isXWalkReady()) {
             startUrl = url;
+
+            CordovaPlugin initPlugin = new CordovaPlugin() {
+                @Override
+                public void onResume(boolean multitasking) {
+                    activityDelegate.onResume();
+                }
+            };
+            pluginManager.addService(new PluginEntry("XWalkInit", initPlugin));
             return;
         }
         webView.load(url, null);
