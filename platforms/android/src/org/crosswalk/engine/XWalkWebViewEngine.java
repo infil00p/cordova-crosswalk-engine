@@ -134,6 +134,7 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     @Override
     public boolean canGoBack() {
+        if (!activityDelegate.isXWalkReady()) return false;
         return this.webView.getNavigationHistory().canGoBack();
     }
 
@@ -183,6 +184,7 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     @Override
     public String getUrl() {
+        if (!activityDelegate.isXWalkReady()) return null;
         return this.webView.getUrl();
     }
 
