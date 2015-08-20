@@ -18,20 +18,24 @@
 
     <!-- android -->
     <platform name="android">
+        <preference name="XWALK_VERSION" default="14+"/>
+        <preference name="XWALK_COMMANDLINE" default="--disable-pull-to-refresh-effect"/>
+        <preference name="XWALK_MODE" default="embedded" />
+
         <config-file target="res/xml/config.xml" parent="/*">
             <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine"/>
 
             <!-- Crosswalk Version -->
             <!-- Example: '10', '15+', 'xwalk_core_library_beta:9+', 'org.xwalk:xwalk_core_library_beta:18+' -->
             <!-- Reference: https://crosswalk-project.org/documentation/downloads.html -->
-            <preference name="CROSSWALK_ANDROID_VERSION" default="14+"/>
+            <preference name="xwalkVersion" value="$XWALK_VERSION"/>
 
             <!-- Crosswalk Arguments-->
             <!-- Default: '––disable-pull-to-refresh-effect' -->
             <!-- Reference: https://github.com/crosswalk-project/crosswalk-website/wiki/Crosswalk-Command-Line-Options -->
-            <preference name="CROSSWALK_ANDROID_COMMANDLINE" default="--disable-pull-to-refresh-effect"/>
+            <preference name="xwalkCommandLine" value="$XWALK_COMMANDLINE"/>
 
-            <preference name="LIB_MODE" default="embedded" />
+            <preference name="xwalkMode" value="$XWALK_MODE" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/*">
@@ -48,6 +52,6 @@
 
         <framework src="platforms/android/xwalk.gradle" custom="true" type="gradleReference"/>
 
-        <hook type="after_plugin_install" src="hooks/after_plugin_install/000-apply_cli_options.js"/>
+        <hook type="after_plugin_install" src="hooks/after_plugin_install/000-shared_mode_special.js"/>
     </platform>
 </plugin>

@@ -23,7 +23,7 @@ instead of the System WebView. Requires cordova-android 4.0 or greater.
 
 The following directions are for cordova-cli (most people).  Alternatively you can use the [Android platform scripts workflow](PlatformScriptsWorkflow.md).
 
-* Open an existing cordova project, with cordova-android 4.0.0+, and using the latest CLI.
+* Open an existing cordova project, with cordova-android 4.0.0+, and using the latest CLI (If below Cordova 5.2.0 which support default variable, please append those values like `--variable XWALK_VERSION="14+" --variable XWALK_COMMANDLINE="--disable-pull-to-refresh-effect" --variable XWALK_MODE="embedded"`).
 * Add this plugin
 
 ```
@@ -58,15 +58,15 @@ To build System-webview apk, remove this plugin and run:
 You can try out a different Crosswalk version using a `<preference>` tag within your `config.xml`. Some examples:
 
     <!-- These are all equivalent -->
-    <preference name="CROSSWALK_ANDROID_VERSION" value="org.xwalk:xwalk_core_library_beta:13+" />
-    <preference name="CROSSWALK_ANDROID_VERSION" value="xwalk_core_library_beta:13+" />
-    <preference name="CROSSWALK_ANDROID_VERSION" value="13+" />
-    <preference name="CROSSWALK_ANDROID_VERSION" value="13" />
+    <preference name="xwalkVersion" value="org.xwalk:xwalk_core_library:14+" />
+    <preference name="xwalkVersion" value="xwalk_core_library:14+" />
+    <preference name="xwalkVersion" value="14+" />
+    <preference name="xwalkVersion" value="14" />
 
 You can set [command-line flags](http://peter.sh/experiments/chromium-command-line-switches/) as well:
 
     <!-- This is the default -->
-    <preference name="CROSSWALK_ANDROID_COMMANDLINE" value="--disable-pull-to-refresh-effect" />
+    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
 
 ### Release Notes
 

@@ -20,8 +20,8 @@
 def EMBEDDED_MODE = "embedded"
 def SHARED_MODE = "shared"
 def DEFAULT_GROUP_ID = "org.xwalk:"
-def SHARED_ARTIFACT_ID = "xwalk_shared_library_beta:"
-def EMBEDD_ARTIFACT_ID = "xwalk_core_library_beta:"
+def SHARED_ARTIFACT_ID = "xwalk_shared_library:"
+def EMBEDD_ARTIFACT_ID = "xwalk_core_library:"
 
 repositories {
   maven {
@@ -56,17 +56,17 @@ def getConfigPreference(name) {
     return ret ? ret : defaultValue
 }
 
-if (!project.hasProperty('lib_mode')) {
-    def mode = getConfigPreference("LIB_MODE")
+if (!project.hasProperty('xwalkMode')) {
+    def mode = getConfigPreference("xwalkMode")
     println mode
     ext.artifactid = mode == SHARED_MODE ? SHARED_ARTIFACT_ID : EMBEDD_ARTIFACT_ID;
 }
 // Set defaults before project's build-extras.gradle
 if (!project.hasProperty('xwalkVersion')) {
-    ext.xwalkVersion = getConfigPreference("CROSSWALK_ANDROID_VERSION")
+    ext.xwalkVersion = getConfigPreference("xwalkVersion")
 }
 if (!project.hasProperty('xwalkCommandLine')) {
-    ext.xwalkCommandLine = getConfigPreference("CROSSWALK_ANDROID_COMMANDLINE")
+    ext.xwalkCommandLine = getConfigPreference("xwalkCommandLine")
 }
 // Apply values after project's build-extras.gradle
 cdvPluginPostBuildExtras.add({
