@@ -11,12 +11,17 @@ module.exports = function(context) {
         et = context.requireCordovaModule('elementtree');
 
     /** @defaults */
-    var androidPlatformDir = path.join(context.opts.projectRoot,
+    var xwalkVariables = {'xwalkVersion':'14+', 'xwalkCommandLine':'--disable-pull-to-refresh-effect',
+            'xwalkMode':'embedded'},
+        argumentsString = context.cmdLine,
+        androidPlatformDir = path.join(context.opts.projectRoot,
             'platforms', 'android'),
-        projectConfigurationFile = path.join(androidPlatformDir,
-            'res', 'xml', 'config.xml'),
+        projectConfigurationFile = path.join(context.opts.projectRoot,
+            'config.xml'),
         projectManifestFile = path.join(androidPlatformDir,
-            'AndroidManifest.xml');
+            'AndroidManifest.xml'),
+        platformJsonFile = path.join(context.opts.projectRoot,
+            'plugins', 'android.json');
 
     /** Init */
     var CordovaConfig = new ConfigParser(projectConfigurationFile);
@@ -28,9 +33,59 @@ module.exports = function(context) {
         fs.writeFileSync(projectManifestFile, projectManifestXmlRoot.write({indent: 4}), 'utf-8');
     }
 
+    /** Set preference */
+    var addPreferences = function() {
+        var configXmlRoot = XmlHelpers.parseElementtreeSync(projectConfigurationFile);
+        for (name in xwalkVariables) {
+            var child = et.XML('<preference name="' + name + '" value="' + xwalkVariables[name] + '" />');
+            XmlHelpers.graftXML(configXmlRoot, [child], '/*');
+        }
+        fs.writeFileSync(projectConfigurationFile, configXmlRoot.write({indent: 4}), 'utf-8');
+    }
+
+    /** The style of name align with config.xml */
+    var setConfigPreference = function(name, value) {
+        var localName = null;
+        if (name == 'XWALK_VERSION') {
+            localName = 'xwalkVersion';
+        } else if (name == 'XWALK_COMMANDLINE') {
+            localName = 'xwalkCommandLine';
+        } else if (name == 'XWALK_MODE') {
+            localName = 'xwalkMode';
+        }
+
+        if (localName) {
+            xwalkVariables[localName] = value;
+        }
+    }
+
+    /** Pase the cli command to get the specific preferece*/
+    var parseCliPreference = function() {
+        var commandlineVariablesList = argumentsString.split('variable');
+        if (commandlineVariablesList) {
+            commandlineVariablesList.forEach(function(element) {
+                var spaceList = element.split(' ');
+                if (spaceList) {
+                    spaceList.forEach(function(element) {
+                        var preference = element.split('=');
+                        if (preference && preference.length == 2) {
+                            setConfigPreference(preference[0].toUpperCase(), preference[1]);
+                        }
+                    });
+                }
+            });
+        }
+    }
+
     /** Main method */
     var main = function() {
-        if (CordovaConfig.getGlobalPreference('xwalkMode') == 'shared') {
+        // Parse cli preference
+        parseCliPreference();
+
+        // Add xwalk preference to config.xml
+        addPreferences();
+
+        if (xwalkVariables['xwalkMode'] == 'shared') {
             // Add the permission of write_external_storage in shared mode
             addPermission();
         }
