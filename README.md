@@ -30,12 +30,6 @@ The following directions are for cordova-cli (most people).  Alternatively you c
 $ cordova plugin add cordova-plugin-crosswalk-webview
 ```
 
-If your Cordova CLI version is lower than 5.2.0, these default variables need to be specified at install time
-
-```
-$ cordova plugin add cordova-plugin-crosswalk-webview --variable XWALK_VERSION="14+" --variable XWALK_COMMANDLINE="--disable-pull-to-refresh-effect" --variable XWALK_MODE="embedded"
-```
-
 * Build
 ```
 $ cordova build android
@@ -94,7 +88,7 @@ You can use [shared mode](https://crosswalk-project.org/documentation/shared_mod
 ### Release Notes
 
 #### 1.3.0 (August 28, 2015)
-* Crosswalk variables can be configured as an option via latest CLI, but those default variables must be specified if the Cordova CLI version is lower than Cordova 5.2.0
+* Crosswalk variables can be configured as an option via latest CLI
 
 ```
 $ cordova plugin add cordova-plugin-crosswalk-webview --variable XWALK_VERSION="15+"
