@@ -95,7 +95,8 @@ $ cordova plugin add cordova-plugin-crosswalk-webview --variable XWALK_VERSION="
 ```
 
 * Support for [Crosswalk's shared mode](https://crosswalk-project.org/documentation/shared_mode.html) via the XWALK_MODE install variable or xwalkMode preference
-* Based on Crosswalk 14 stable version
+* Uses the latest Crosswalk 14 stable version by default
+* Doesn't work with Crosswalk 14.43.343.17 and earlier
 * Requires Cordova CLI 5.2.0 or later
 
 #### 1.2.0 (April 22, 2015)
