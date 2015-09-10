@@ -84,7 +84,8 @@ You can use the Crosswalk [shared mode](https://crosswalk-project.org/documentat
     <!-- These are all equivalent -->
     cordova plugin add cordova-plugin-crosswalk-webview  --variable XWALK_MODE="shared"
     <preference name="xwalkMode" value="shared" />
-
+Note that if you want to specify the Crosswalk version when using shared mode, you need to use the shared version of the library, e.g.: 
+```cordova plugin add cordova-plugin-crosswalk-webview --variable XWALK_VERSION="org.xwalk:xwalk_shared_library_beta:14+"  XWALK_MODE="shared"
 ### Release Notes
 
 #### 1.3.0 (August 28, 2015)
