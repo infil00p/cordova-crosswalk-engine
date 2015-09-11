@@ -85,23 +85,19 @@ You can use the Crosswalk [shared mode](https://crosswalk-project.org/documentat
     cordova plugin add cordova-plugin-crosswalk-webview  --variable XWALK_MODE="shared"
     <preference name="xwalkMode" value="shared" />
 Note that if you want to specify the Crosswalk version when using shared mode, you need to use the shared version of the library, e.g.: 
-```
-cordova plugin add cordova-plugin-crosswalk-webview --variable XWALK_VERSION="org.xwalk:xwalk_shared_library_beta:14+" XWALK_MODE="shared"
-```
+
+    <!-- Using a Crosswalk shared mode beta version -->
+    cordova plugin add cordova-plugin-crosswalk-webview --variable XWALK_VERSION="org.xwalk:xwalk_shared_library_beta:14+"
+
+
 ### Release Notes
 
 #### 1.3.0 (August 28, 2015)
-* Crosswalk variables can be configured as an option via latest CLI
-
-```
-$ cordova plugin add cordova-plugin-crosswalk-webview --variable XWALK_VERSION="15+"
-```
-
+* Crosswalk variables can be configured as an option via CLI
 * Support for [Crosswalk's shared mode](https://crosswalk-project.org/documentation/shared_mode.html) via the XWALK_MODE install variable or xwalkMode preference
 * Uses the latest Crosswalk 14 stable version by default
 * The ANIMATABLE_XWALK_VIEW preference is false by default
 * Doesn't work with Crosswalk 14.43.343.17 and earlier
-* Requires Cordova CLI 5.2.0 or later
 
 #### 1.2.0 (April 22, 2015)
 * Made Crosswalk command-line configurable via `<preference name="xwalkCommandLine" value="..." />`
