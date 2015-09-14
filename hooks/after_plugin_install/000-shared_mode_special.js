@@ -36,11 +36,18 @@ module.exports = function(context) {
     /** Set preference */
     var addPreferences = function() {
         var configXmlRoot = XmlHelpers.parseElementtreeSync(projectConfigurationFile);
+        var preferenceUpdated = false;
         for (name in xwalkVariables) {
-            var child = et.XML('<preference name="' + name + '" value="' + xwalkVariables[name] + '" />');
-            XmlHelpers.graftXML(configXmlRoot, [child], '/*');
+            var child = configXmlRoot.find('./preference[@name="' + name + '"]');
+            if(!child) {
+                preferenceUpdated = true;
+                child = et.XML('<preference name="' + name + '" value="' + xwalkVariables[name] + '" />');
+                XmlHelpers.graftXML(configXmlRoot, [child], '/*');
+            }
         }
-        fs.writeFileSync(projectConfigurationFile, configXmlRoot.write({indent: 4}), 'utf-8');
+        if(preferenceUpdated) {
+            fs.writeFileSync(projectConfigurationFile, configXmlRoot.write({indent: 4}), 'utf-8');
+        }
     }
 
     /** The style of name align with config.xml */
