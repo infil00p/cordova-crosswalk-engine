@@ -128,8 +128,8 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     private void initWebViewSettings() {
         webView.setVerticalScrollBarEnabled(false);
-        if(preferences.contains(PREF_USER_AGENT)){
-            String xwalkUserAgent = preferences.getString(PREF_USER_AGENT, "");
+        String xwalkUserAgent = preferences == null ? "" : preferences.getString(PREF_USER_AGENT, "");
+        if (!xwalkUserAgent.isEmpty()) {
             webView.setUserAgentString(xwalkUserAgent);
         }
     }
