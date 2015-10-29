@@ -103,4 +103,11 @@ public class XWalkCordovaView extends XWalkView implements CordovaWebViewEngine.
     public CordovaWebView getCordovaWebView() {
         return parentEngine == null ? null : parentEngine.getCordovaWebView();
     }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        if (parentEngine != null && parentEngine.isXWalkReady()) {
+            super.setBackgroundColor(color);
+        }
+    }
 }
