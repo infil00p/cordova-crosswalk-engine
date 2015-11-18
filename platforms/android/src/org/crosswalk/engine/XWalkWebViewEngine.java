@@ -130,8 +130,8 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
     private void initWebViewSettings() {
         webView.setVerticalScrollBarEnabled(false);
 
-        if (preferences.contains("ZOrderOnTop")) {
-            boolean zOrderOnTop = preferences.getBoolean("ZOrderOnTop", true);
+        if (preferences.contains("xwalkZOrderOnTop")) {
+            boolean zOrderOnTop = preferences.getBoolean("xwalkZOrderOnTop", true);
             webView.setZOrderOnTop(zOrderOnTop);
         }
 
