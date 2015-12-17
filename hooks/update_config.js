@@ -81,19 +81,17 @@ module.exports = function(context) {
         }
     }
 
-    /** Pase the cli command to get the specific preferece*/
+    /** Pase the cli command to get the specific preference*/
     var parseCliPreference = function() {
-        var commandlineVariablesList = argumentsString.split('variable');
+        var commandlineVariablesList = argumentsString.split('--variable');
         if (commandlineVariablesList) {
             commandlineVariablesList.forEach(function(element) {
-                var spaceList = element.split(' ');
-                if (spaceList) {
-                    spaceList.forEach(function(element) {
-                        var preference = element.split('=');
-                        if (preference && preference.length == 2) {
-                            setConfigPreference(preference[0], preference[1]);
-                        }
-                    });
+                element = element.trim();
+                if(element && element.indexOf('XWALK') == 0) {
+                    var preference = element.split('=');
+                    if (preference && preference.length == 2) {
+                        setConfigPreference(preference[0], preference[1]);
+                    }
                 }
             });
         }
