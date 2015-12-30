@@ -79,6 +79,10 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
                 exposeJsInterface(webView, bridge);
 
                 loadUrl(startUrl, true);
+                // Send the massage of xwalk's ready to plugin.
+                if (pluginManager != null) {
+                    pluginManager.postMessage("onXWalkReady", this);
+                }
             }
         };
         activityDelegate = new XWalkActivityDelegate((Activity) context, cancelCommand, completeCommand);
