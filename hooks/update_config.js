@@ -26,7 +26,8 @@ module.exports = function(context) {
         projectConfigurationFile = path.join(context.opts.projectRoot,
             'config.xml'),
         projectManifestFile = path.join(androidPlatformDir,
-            'AndroidManifest.xml');
+            'AndroidManifest.xml'),
+        xwalk64bit = "xwalk64bit";
 
     /** Init */
     var CordovaConfig = new ConfigParser(projectConfigurationFile);
@@ -138,6 +139,44 @@ module.exports = function(context) {
             }
         }
         fs.writeFileSync(projectConfigurationFile, configXmlRoot.write({indent: 4}), 'utf-8');
+    }
+
+    var build64bit = function() {
+        var build64bit = false;
+        var commandlineVariablesList = argumentsString.split('--');
+
+        if (commandlineVariablesList) {
+            commandlineVariablesList.forEach(function(element) {
+                element = element.trim();
+                if(element && element.indexOf(xwalk64bit) == 0) {
+                    build64bit = true;
+                }
+            });
+        }
+        return build64bit;
+    }
+
+    this.beforeBuild64bit = function() {
+        if(build64bit()) {
+            var configXmlRoot = XmlHelpers.parseElementtreeSync(projectConfigurationFile);
+            var child = configXmlRoot.find('./preference[@name="' + xwalk64bit + '"]');
+            if(!child) {
+                child = et.XML('<preference name="' + xwalk64bit + '" value="' + xwalk64bit + '" />');
+                XmlHelpers.graftXML(configXmlRoot, [child], '/*');
+                fs.writeFileSync(projectConfigurationFile, configXmlRoot.write({indent: 4}), 'utf-8');
+            }
+        }
+    }
+
+    this.afterBuild64bit = function() {
+        if(build64bit()) {
+            var configXmlRoot = XmlHelpers.parseElementtreeSync(projectConfigurationFile);
+            var child = configXmlRoot.find('./preference[@name="' + xwalk64bit + '"]');
+            if (child) {
+                XmlHelpers.pruneXML(configXmlRoot, [child], '/*');
+                fs.writeFileSync(projectConfigurationFile, configXmlRoot.write({indent: 4}), 'utf-8');
+            }
+        }
     }
 
     xwalkVariables = defaultPreferences();
