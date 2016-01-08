@@ -15,6 +15,7 @@
     <engines>
         <engine name="cordova-android" version=">=4"/>
         <engine name="cordova-plugman" version=">=4.2.0"/><!-- needed for gradleReference support -->
+        <engine name="cordova-ios" version=">=3.9.2"/>
     </engines>
 
     <!-- android -->
@@ -43,5 +44,14 @@
 
         <hook type="after_plugin_install" src="hooks/after_plugin_install/000-shared_mode_special.js"/>
         <hook type="before_plugin_uninstall" src="hooks/before_plugin_uninstall/000-shared_mode_special.js"/>
+    </platform>
+
+    <!-- iOS -->
+    <platform name="ios">
+        <framework src="platforms/ios/frameworks/GCDWebServer.framework" custom="true"/>
+        <framework src="platforms/ios/frameworks/XWalkView.framework" custom="true"/>
+
+        <hook type="after_plugin_install" src="hooks/ios/after_plugin_install/000-update_xcode_config.js"/>
+        <hook type="before_plugin_uninstall" src="hooks/ios/before_plugin_uninstall/000-remove_xcode_config.js"/>
     </platform>
 </plugin>
