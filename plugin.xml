@@ -39,6 +39,8 @@
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaUiClient.java" target-dir="src/org/crosswalk/engine"/>
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaView.java" target-dir="src/org/crosswalk/engine"/>
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaCookieManager.java" target-dir="src/org/crosswalk/engine"/>
+        <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaClientCertRequest.java" target-dir="src/org/crosswalk/engine"/>
+        <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaHttpAuthHandler.java" target-dir="src/org/crosswalk/engine"/>
 
         <framework src="platforms/android/xwalk.gradle" custom="true" type="gradleReference"/>
 
