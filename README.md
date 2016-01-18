@@ -100,6 +100,10 @@ You can also set user agent with the preference of xwalkUserAgent.
 
 ### Release Notes
 
+#### 1.5.0 (January 18, 2016)
+* Uses the latest Crosswalk 16 stable version by default
+* The message of xwalk's ready can be listened
+
 #### 1.4.0 (November 5, 2015)
 * Uses the latest Crosswalk 15 stable version by default
 * Support User Agent and Background Color configuration preferences
