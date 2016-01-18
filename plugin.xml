@@ -44,6 +44,8 @@
 
         <hook type="after_plugin_install" src="hooks/after_plugin_install/000-shared_mode_special.js"/>
         <hook type="before_plugin_uninstall" src="hooks/before_plugin_uninstall/000-shared_mode_special.js"/>
+        <hook type="after_build" src="hooks/after_build/000-build_64_bit.js"/>
+        <hook type="before_build" src="hooks/before_build/000-build_64_bit.js"/>
     </platform>
 
     <!-- iOS -->
