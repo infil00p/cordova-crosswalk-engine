@@ -21,8 +21,14 @@ package org.crosswalk.engine;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
+
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.cordova.CordovaBridge;
 import org.apache.cordova.CordovaInterface;
@@ -47,6 +53,8 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
     public static final String TAG = "XWalkWebViewEngine";
     public static final String XWALK_USER_AGENT = "xwalkUserAgent";
     public static final String XWALK_Z_ORDER_ON_TOP = "xwalkZOrderOnTop";
+
+    private static final String XWALK_EXTENSIONS_FOLDER = "xwalk-extensions";
 
     protected final XWalkCordovaView webView;
     protected XWalkCordovaCookieManager cookieManager;
@@ -77,6 +85,16 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
                 initWebViewSettings();
                 exposeJsInterface(webView, bridge);
+                loadExtensions();
+
+                CordovaPlugin notifPlugin = new CordovaPlugin() {
+                    @Override
+                    public void onNewIntent(Intent intent) {
+                        Log.i(TAG, "notifPlugin route onNewIntent() to XWalkView: " + intent.toString());
+                        XWalkWebViewEngine.this.webView.onNewIntent(intent);
+                    }
+                };
+                pluginManager.addService(new PluginEntry("XWalkNotif", notifPlugin));
 
                 loadUrl(startUrl, true);
                 // Send the massage of xwalk's ready to plugin.
@@ -152,6 +170,24 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
     private static void exposeJsInterface(XWalkView webView, CordovaBridge bridge) {
         XWalkExposedJsApi exposedJsApi = new XWalkExposedJsApi(bridge);
         webView.addJavascriptInterface(exposedJsApi, "_cordovaNative");
+    }
+
+    private void loadExtensions() {
+        AssetManager assetManager = cordova.getActivity().getAssets();
+        String[] extList;
+        try {
+            Log.i(TAG, "Iterate assets/xwalk-extensions folder");
+            extList = assetManager.list(XWALK_EXTENSIONS_FOLDER);
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to iterate assets/xwalk-extensions folder");
+            return;
+        }
+
+        for (String path : extList) {
+            // Load the extension.
+            Log.i(TAG, "Start to load extension: " + path);
+            webView.getExtensionManager().loadExtension(XWALK_EXTENSIONS_FOLDER + File.separator + path);
+        }
     }
 
     @Override
