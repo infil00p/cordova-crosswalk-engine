@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
@@ -44,6 +45,7 @@ import org.apache.cordova.PluginManager;
 import org.xwalk.core.XWalkActivityDelegate;
 import org.xwalk.core.XWalkNavigationHistory;
 import org.xwalk.core.XWalkView;
+import org.xwalk.core.XWalkGetBitmapCallback;
 
 /**
  * Glue class between CordovaWebView (main Cordova logic) and XWalkCordovaView (the actual View).
@@ -92,6 +94,22 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
                     public void onNewIntent(Intent intent) {
                         Log.i(TAG, "notifPlugin route onNewIntent() to XWalkView: " + intent.toString());
                         XWalkWebViewEngine.this.webView.onNewIntent(intent);
+                    }
+
+                    @Override
+                    public Object onMessage(String id, Object data) {
+                        if (id.equals("captureXWalkBitmap")) {
+                            XWalkWebViewEngine.this.webView.captureBitmapAsync(
+                                    new XWalkGetBitmapCallback() {
+                                @Override
+                                public void onFinishGetBitmap(Bitmap bitmap,
+                                        int response) {
+                                    pluginManager.postMessage(
+                                            "onGotXWalkBitmap", bitmap);
+                                }
+                            });
+                        }
+                        return null;
                     }
                 };
                 pluginManager.addService(new PluginEntry("XWalkNotif", notifPlugin));
