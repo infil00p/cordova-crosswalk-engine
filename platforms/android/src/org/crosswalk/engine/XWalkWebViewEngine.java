@@ -31,6 +31,8 @@ import android.view.View;
 import java.io.File;
 import java.io.IOException;
 
+import junit.framework.Assert;
+
 import org.apache.cordova.CordovaBridge;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -114,10 +116,13 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
                 };
                 pluginManager.addService(new PluginEntry("XWalkNotif", notifPlugin));
 
-                loadUrl(startUrl, true);
                 // Send the massage of xwalk's ready to plugin.
                 if (pluginManager != null) {
                     pluginManager.postMessage("onXWalkReady", this);
+                }
+
+                if (startUrl != null) {
+                    webView.load(startUrl, null);
                 }
             }
         };
@@ -141,6 +146,14 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
         this.resourceApi = resourceApi;
         this.pluginManager = pluginManager;
         this.nativeToJsMessageQueue = nativeToJsMessageQueue;
+
+        CordovaPlugin activityDelegatePlugin = new CordovaPlugin() {
+            @Override
+            public void onResume(boolean multitasking) {
+                activityDelegate.onResume();
+            }
+        };
+        pluginManager.addService(new PluginEntry("XWalkActivityDelegate", activityDelegatePlugin));
 
         webView.init(this);
 
@@ -272,15 +285,8 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
     @Override
     public void loadUrl(String url, boolean clearNavigationStack) {
         if (!activityDelegate.isXWalkReady()) {
+            Assert.assertNull(startUrl);
             startUrl = url;
-
-            CordovaPlugin initPlugin = new CordovaPlugin() {
-                @Override
-                public void onResume(boolean multitasking) {
-                    activityDelegate.onResume();
-                }
-            };
-            pluginManager.addService(new PluginEntry("XWalkInit", initPlugin));
             return;
         }
         webView.load(url, null);
