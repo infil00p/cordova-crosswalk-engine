@@ -54,9 +54,10 @@ if (!project.hasProperty('xwalk64bit')) {
     ext.xwalk64bit = getConfigPreference("xwalk64bit");
     println xwalk64bit
 }
-if (cdvBuildMultipleApks == null && ext.xwalk64bit == null) {
-    ext.cdvBuildMultipleApks = getConfigPreference("xwalkMultipleApk").toBoolean();
+if (cdvBuildMultipleApks == null) {
+    ext.xwalkMultipleApk = getConfigPreference("xwalkMultipleApk").toBoolean();
 }
+
 if (cdvMinSdkVersion == null) {
     def minSdk = getConfigPreference("android-minSdkVersion");
     ext.cdvMinSdkVersion =  minSdk && minSdk.toInteger() > 14 ? minSdk : 14;
@@ -67,6 +68,15 @@ if (!project.hasProperty('xwalkMode')) {
     println mode
     ext.artifactid = mode == SHARED_MODE ? SHARED_ARTIFACT_ID : EMBEDD_ARTIFACT_ID;
 }
+if (artifactid == SHARED_ARTIFACT_ID) {
+    // Build one apk at shared mode because the value of
+    // ext.cdvBuildMultipleApks is false by default.
+    xwalk64bit = null;
+} else if (xwalk64bit == null) {
+    // Build embedded 32 bit crosswalk will generate two apks by default.
+    ext.cdvBuildMultipleApks = xwalkMultipleApk;
+}
+
 // Set defaults before project's build-extras.gradle
 if (!project.hasProperty('xwalkVersion')) {
     ext.xwalkVersion = getConfigPreference("xwalkVersion")
