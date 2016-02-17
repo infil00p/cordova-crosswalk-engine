@@ -101,13 +101,18 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
                     @Override
                     public Object onMessage(String id, Object data) {
                         if (id.equals("captureXWalkBitmap")) {
-                            XWalkWebViewEngine.this.webView.captureBitmapAsync(
-                                    new XWalkGetBitmapCallback() {
-                                @Override
-                                public void onFinishGetBitmap(Bitmap bitmap,
-                                        int response) {
-                                    pluginManager.postMessage(
-                                            "onGotXWalkBitmap", bitmap);
+                            // Capture bitmap on UI thread.
+                            XWalkWebViewEngine.this.cordova.getActivity().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    XWalkWebViewEngine.this.webView.captureBitmapAsync(
+                                            new XWalkGetBitmapCallback() {
+                                        @Override
+                                        public void onFinishGetBitmap(Bitmap bitmap,
+                                                int response) {
+                                            pluginManager.postMessage(
+                                                    "onGotXWalkBitmap", bitmap);
+                                        }
+                                    });
                                 }
                             });
                         }
