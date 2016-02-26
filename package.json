@@ -28,7 +28,7 @@
     },
     {
       "name": "cordova-ios",
-      "version": ">=3.9.2"
+      "version": ">=4"
     },
     {
       "name": "cordova-plugman",
