@@ -22,6 +22,7 @@
         <config-file target="res/xml/config.xml" parent="/*">
             <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine"/>
             <preference name="xwalkVersion" default="xwalk_core_library_beta:18+"/>
+            <preference name="xwalkLiteVersion" default="xwalk_core_library_canary:17+"/>
             <preference name="xwalkCommandLine" default="--disable-pull-to-refresh-effect"/>
             <preference name="xwalkMode" default="embedded" />
             <preference name="xwalkMultipleApk" default="true" />

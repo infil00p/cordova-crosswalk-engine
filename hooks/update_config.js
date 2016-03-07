@@ -27,7 +27,9 @@ module.exports = function(context) {
             'config.xml'),
         projectManifestFile = path.join(androidPlatformDir,
             'AndroidManifest.xml'),
-        xwalk64bit = "xwalk64bit";
+        xwalk64bit = "xwalk64bit",
+        xwalkLiteVersion = "",
+        specificVersion = false;
 
     /** Init */
     var CordovaConfig = new ConfigParser(projectConfigurationFile);
@@ -64,7 +66,12 @@ module.exports = function(context) {
         tagsList.map(function(prefTag) {
             prefTag.getchildren().forEach(function(element) {
                 if ((element.tag == 'preference') && (element.attrib['name']) && element.attrib['default']) {
-                    pluginPreferences[element.attrib['name']] = element.attrib['default'];
+                    // Don't add xwalkLiteVersion in the app/config.xml
+                    if (element.attrib['name'] == "xwalkLiteVersion") {
+                        xwalkLiteVersion = element.attrib['default'];
+                    } else {
+                        pluginPreferences[element.attrib['name']] = element.attrib['default'];
+                    }
                 }
             });
         });
@@ -78,6 +85,9 @@ module.exports = function(context) {
         for (localName in xwalkVariables) {
             if (localName.toUpperCase() == trimName.toUpperCase()) {
                 xwalkVariables[localName] = value;
+                if (localName == 'xwalkVersion') {
+                    specificVersion = true;
+                }
             }
         }
     }
@@ -106,6 +116,8 @@ module.exports = function(context) {
         // Add the permission of writing external storage when using shared mode
         if (xwalkVariables['xwalkMode'] == 'shared') {
             addPermission();
+        } else if (xwalkVariables['xwalkMode'] == 'lite' && specificVersion == false) {
+            xwalkVariables['xwalkVersion'] = xwalkLiteVersion;
         }
 
         // Configure the final value in the config.xml
