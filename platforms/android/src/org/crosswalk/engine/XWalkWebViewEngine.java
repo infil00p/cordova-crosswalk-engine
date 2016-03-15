@@ -197,6 +197,12 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
         if (!xwalkUserAgent.isEmpty()) {
             webView.setUserAgentString(xwalkUserAgent);
         }
+        
+        String appendUserAgent = preferences.getString("AppendUserAgent", "");
+        if (!appendUserAgent.isEmpty()) {
+            webView.setUserAgentString(webView.getUserAgentString() + " " + appendUserAgent);
+        }
+        
         if (preferences.contains("BackgroundColor")) {
             int backgroundColor = preferences.getInteger("BackgroundColor", Color.BLACK);
             webView.setBackgroundColor(backgroundColor);
