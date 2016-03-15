@@ -82,7 +82,7 @@ module.exports = function(context) {
     /** The style of name align with config.xml */
     var setConfigPreference = function(name, value) {
         var trimName = name.replace('_', '');
-        for (localName in xwalkVariables) {
+        for (var localName in xwalkVariables) {
             if (localName.toUpperCase() == trimName.toUpperCase()) {
                 xwalkVariables[localName] = value;
                 if (localName == 'xwalkVersion') {
@@ -123,7 +123,7 @@ module.exports = function(context) {
         // Configure the final value in the config.xml
         var configXmlRoot = XmlHelpers.parseElementtreeSync(projectConfigurationFile);
         var preferenceUpdated = false;
-        for (name in xwalkVariables) {
+        for (var name in xwalkVariables) {
             var child = configXmlRoot.find('./preference[@name="' + name + '"]');
             if(!child) {
                 preferenceUpdated = true;
@@ -144,7 +144,7 @@ module.exports = function(context) {
         }
 
         var configXmlRoot = XmlHelpers.parseElementtreeSync(projectConfigurationFile);
-        for (name in xwalkVariables) {
+        for (var name in xwalkVariables) {
             var child = configXmlRoot.find('./preference[@name="' + name + '"]');
             if (child) {
                 XmlHelpers.pruneXML(configXmlRoot, [child], '/*');
