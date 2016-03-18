@@ -296,7 +296,6 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
     @Override
     public void loadUrl(String url, boolean clearNavigationStack) {
         if (!activityDelegate.isXWalkReady()) {
-            Assert.assertNull(startUrl);
             startUrl = url;
             return;
         }
