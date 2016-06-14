@@ -43,7 +43,9 @@ For example, building android with Crosswalk generates:
 /path/to/hello/platforms/android/build/outputs/apk/hello-armv7-debug.apk
 ```
 
-Note that it is also possible to publish a multi-APK application on the Play Store that uses Crosswalk for Pre-L devices, and the (updatable) system webview for L+:
+Note that you might have to run `cordova clean` before building, if you previously built the app without cordova-plugin-crosswalk-webview. Also, manually uninstall the app from the device/emulator before attempting to install the crosswalk-enabled version.
+
+Also note that it is also possible to publish a multi-APK application on the Play Store that uses Crosswalk for Pre-L devices, and the (updatable) system webview for L+:
 
 To build Crosswalk-enabled apks, add this plugin and run:
 
