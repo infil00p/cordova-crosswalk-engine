@@ -109,10 +109,14 @@ You can also set user agent with the preference of xwalkUserAgent.
 
 ### Release Notes
 
+#### 1.8.0 (June 30, 2016)
+* Uses the latest Crosswalk 19 stable version by default
+
 #### 1.7.0 (May 4, 2016)
 * Uses the latest Crosswalk 18 stable version by default
 * Support to use [Crosswalk Lite](https://crosswalk-project.org/documentation/crosswalk_lite.html), It's possible to specify lite value with the variable of XWALK_MODE at install plugin time.
 * [Cordova screenshot plugin](https://github.com/gitawego/cordova-screenshot.git) can capture the visible content of web page with Crosswalk library.
+* Doesn't work with Crosswalk 17 and earlier
 
 #### 1.6.0 (March 11, 2016)
 * Uses the latest Crosswalk 17 stable version by default
