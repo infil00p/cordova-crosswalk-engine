@@ -21,11 +21,12 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine"/>
-            <preference name="xwalkVersion" default="19+"/>
+            <preference name="xwalkVersion" default="20+"/>
             <preference name="xwalkLiteVersion" default="xwalk_core_library_canary:17+"/>
             <preference name="xwalkCommandLine" default="--disable-pull-to-refresh-effect"/>
             <preference name="xwalkMode" default="embedded" />
             <preference name="xwalkMultipleApk" default="true" />
+            <preference name="android-minSdkVersion" default="16" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/*">
@@ -49,4 +50,10 @@
         <hook type="after_build" src="hooks/after_build/000-build_64_bit.js"/>
         <hook type="before_build" src="hooks/before_build/000-build_64_bit.js"/>
     </platform>
+
+    <info>
+        After much discussion and analysis of the market, we have decided to discontinue support for Android 4.0 (ICS) in Crosswalk starting with version 20.
+
+        So the minSdkVersion of Cordova project is configured to 16 by default.
+    </info>
 </plugin>

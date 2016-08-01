@@ -189,6 +189,11 @@ module.exports = function(context) {
                 fs.writeFileSync(projectConfigurationFile, configXmlRoot.write({indent: 4}), 'utf-8');
             }
         }
+
+        console.log("Crosswalk info:");
+        console.log("        After much discussion and analysis of the market,");
+        console.log("        we have decided to discontinue support for Android 4.0 (ICS) in Crosswalk starting with version 20,");
+        console.log("        so the minSdkVersion of Cordova project is configured to 16 by default. \n");
     }
 
     xwalkVariables = defaultPreferences();
