@@ -109,6 +109,10 @@ You can also set user agent with the preference of xwalkUserAgent.
 
 ### Release Notes
 
+#### 2.0.0 (August 17, 2016)
+* Uses the latest Crosswalk 20 stable version by default
+* Discontinue support for Android 4.0 (ICS) in Crosswalk starting with version 20
+
 #### 1.8.0 (June 30, 2016)
 * Uses the latest Crosswalk 19 stable version by default
 
