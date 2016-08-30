@@ -27,6 +27,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
+import android.webkit.ValueCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -300,6 +301,11 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
             return;
         }
         webView.load(url, null);
+    }
+
+    @Override
+    public void evaluateJavascript(String js, ValueCallback<String> callback) {
+      webView.evaluateJavascript(js, callback);
     }
 
     public boolean isXWalkReady() {
