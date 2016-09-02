@@ -32,10 +32,15 @@ import org.xwalk.core.XWalkJavascriptResult;
 import org.xwalk.core.XWalkUIClient;
 import org.xwalk.core.XWalkView;
 
+import org.crosswalk.engine.XWalkWebViewEngine.PermissionRequestListener;
+
 public class XWalkCordovaUiClient extends XWalkUIClient {
     private static final String TAG = "XWalkCordovaUiClient";
     protected final CordovaDialogsHelper dialogsHelper;
     protected final XWalkWebViewEngine parentEngine;
+
+    private XWalkFileChooser mFileChooser;
+    private CordovaPlugin mFileChooserResultPlugin;
 
     private static final int FILECHOOSER_RESULTCODE = 5173;
 
@@ -171,14 +176,33 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
 
     // File Chooser
     @Override
-    public void openFileChooser(XWalkView view, final ValueCallback<Uri> uploadFile, String acceptType, String capture) {
-        uploadFile.onReceiveValue(null);
+    public void openFileChooser(XWalkView view, final ValueCallback<Uri> uploadFile,
+            final String acceptType, final String capture) {
+        if (mFileChooser == null) {
+            mFileChooser = new XWalkFileChooser(parentEngine.cordova.getActivity());
+            mFileChooserResultPlugin = new CordovaPlugin() {
+                @Override
+                public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+                    mFileChooser.onActivityResult(requestCode, resultCode, intent);
+                }
+            };
+        }
 
-        parentEngine.cordova.setActivityResultCallback(new CordovaPlugin() {
+        PermissionRequestListener listener = new PermissionRequestListener() {
             @Override
-            public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-                parentEngine.webView.onActivityResult(requestCode, resultCode, intent);
+            public void onRequestPermissionResult(int requestCode, String[] permissions,
+                    int[] grantResults) {
+                for (int i = 0; i < permissions.length; ++i) {
+                    Log.d(TAG, "permission:" + permissions[i] + " result:" + grantResults[i]);
+                }
+                parentEngine.cordova.setActivityResultCallback(mFileChooserResultPlugin);
+                mFileChooser.showFileChooser(uploadFile, acceptType, capture);
             }
-        });
+        };
+
+        if (!parentEngine.requestPermissionsForFileChooser(listener)) {
+            parentEngine.cordova.setActivityResultCallback(mFileChooserResultPlugin);
+            mFileChooser.showFileChooser(uploadFile, acceptType, capture);
+        }
     }
 }
