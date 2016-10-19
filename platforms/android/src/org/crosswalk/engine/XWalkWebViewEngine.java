@@ -174,6 +174,7 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
                 XWalkWebViewEngine.this.cordova.getActivity().runOnUiThread(r);
             }
         }));
+        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.EvalBridgeMode(this, cordova));
         bridge = new CordovaBridge(pluginManager, nativeToJsMessageQueue);
     }
 
