@@ -157,6 +157,12 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
             @Override
             public void onResume(boolean multitasking) {
                 activityDelegate.onResume();
+                setPaused(false);
+            }
+
+            @Override
+            public void onPause(boolean multitasking) {
+                setPaused(true);
             }
         };
         pluginManager.addService(new PluginEntry("XWalkActivityDelegate", activityDelegatePlugin));
@@ -199,12 +205,12 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
         if (!xwalkUserAgent.isEmpty()) {
             webView.setUserAgentString(xwalkUserAgent);
         }
-        
+
         String appendUserAgent = preferences.getString("AppendUserAgent", "");
         if (!appendUserAgent.isEmpty()) {
             webView.setUserAgentString(webView.getUserAgentString() + " " + appendUserAgent);
         }
-        
+
         if (preferences.contains("BackgroundColor")) {
             int backgroundColor = preferences.getInteger("BackgroundColor", Color.BLACK);
             webView.setBackgroundColor(backgroundColor);
