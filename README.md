@@ -109,9 +109,13 @@ You can also set user agent with the preference of xwalkUserAgent.
 
 ### Release Notes
 
+#### 2.2.0 (November 4, 2016)
+* Uses the latest Crosswalk 22 stable version by default
+* Keep compatible for Cordova-android 6.0 with evaluating Javascript bridge
+* This version requires cordova-android 6.0.0 or newer
+
 #### 2.1.0 (September 9, 2016)
 * Uses the latest Crosswalk 21 stable version by default
-* Keep compatible for Cordova-android 6.0 with evaluating Javascript bridge
 
 #### 2.0.0 (August 17, 2016)
 * Uses the latest Crosswalk 20 stable version by default
