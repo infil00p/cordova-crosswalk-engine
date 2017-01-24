@@ -40,6 +40,7 @@
         </config-file>
 
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkWebViewEngine.java" target-dir="src/org/crosswalk/engine"/>
+        <source-file src="platforms/android/src/org/crosswalk/engine/XWalkFileChooser.java" target-dir="src/org/crosswalk/engine"/>
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkExposedJsApi.java" target-dir="src/org/crosswalk/engine"/>
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaResourceClient.java" target-dir="src/org/crosswalk/engine"/>
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaUiClient.java" target-dir="src/org/crosswalk/engine"/>
