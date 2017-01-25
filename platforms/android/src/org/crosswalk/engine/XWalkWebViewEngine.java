@@ -361,8 +361,12 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
                 listener.onRequestPermissionResult(requestCode, permissions, grantResults);
             }
         };
-        cordova.requestPermissions(permissionRequestPlugin, PERMISSION_REQUEST_CODE,
-                dangerous_permissions.toArray(new String[dangerous_permissions.size()]));
+        try {
+            cordova.requestPermissions(permissionRequestPlugin, PERMISSION_REQUEST_CODE,
+                    dangerous_permissions.toArray(new String[dangerous_permissions.size()]));
+        } catch (NoSuchMethodError e) {
+            return false;
+        }
         return true;
     }
 }
