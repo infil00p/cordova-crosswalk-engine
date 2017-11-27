@@ -29,7 +29,13 @@ def DEFAULT_MIN_SDK_VERSION = 14
 
 def getConfigPreference(name) {
     name = name.toLowerCase()
-    def xml = file("res/xml/config.xml").getText()
+    def xmlfile = file("res/xml/config.xml");
+    def xml = ""
+    if (!xmlfile.exists()) {
+      xml = file("src/main/res/xml/config.xml").getText()
+    } else {
+      xml = xmlfile.getText();
+    }
     // Disable namespace awareness since Cordova doesn't use them properly
     def root = new XmlParser(false, false).parseText(xml)
 
